@@ -90,10 +90,19 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 });
 
 
+
 // La route racine utilise maintenant le HomeController
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Route pour voir une chambre en détail (pour le futur bouton "Réserver")
 Route::get('/chambre/{id}', [HomeController::class, 'showRoom'])->name('rooms.details');
+
+//category
+
+// Route pour afficher toutes les chambres d'une catégorie cliquée
+Route::get('/categorie/{type}', [HomeController::class, 'categoryRooms'])->name('category.show');
+
+// Route pour le bouton "Visiter" (Détail d'une chambre précise)
+Route::get('/chambre-details/{id}', [HomeController::class, 'roomDetails'])->name('room.visit');
 
 require __DIR__.'/auth.php';

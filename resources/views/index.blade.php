@@ -14,56 +14,123 @@
         }
     }
 </style>
-<section class="py-20 bg-gray-50">
-    <div style="display: flex; gap: 2rem; justify-content: center; align-items: flex-start; width: 100%; padding: 2rem 0;">
+<style>
+    .room-card {
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+    }
+    .room-card:hover {
+        transform: translateY(-12px);
+        box-shadow: 0 25px 40px -12px rgba(0, 0, 0, 0.2);
+    }
+    .image-container img {
+        transition: transform 0.8s ease;
+    }
+    .room-card:hover .image-container img {
+        transform: scale(1.1);
+    }
+    .btn-visit {
+        transition: all 0.3s ease;
+    }
+    .btn-visit:hover {
+        background-color: #ff8c00 !important;
+        box-shadow: 0 5px 15px rgba(255, 140, 0, 0.4);
+    }
+    .amenity-tag {
+        font-size: 12px;
+        color: #6b7280;
+        background: #f3f4f6;
+        padding: 4px 10px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+</style>
 
-    <div style="width: 320px; background: white; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); overflow: hidden; transition: all 0.3s ease-in-out;" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 20px 25px -5px rgba(0,0,0,0.2)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 10px 15px -3px rgba(0,0,0,0.1)';" class="group">
-        <div style="height: 200px; overflow: hidden;">
-            <img src="https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=600" style="width: 100%; height: 100%; object-fit: cover;">
-        </div>
-        <div style="padding: 1.5rem;">
-            <h3 style="font-size: 16px; font-weight: 900; text-transform: uppercase; margin-bottom: 8px; color: #1a2238;">Suite Panoramique</h3>
-            <p style="font-size: 10px; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 20px;">Wi-Fi • Clim • Vue mer</p>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-size: 15px; font-weight: 900; color: #1a2238;">210 000 FCFA</span>
-                <button style="background: #f97316; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 11px; font-weight: 900; text-transform: uppercase; cursor: pointer; letter-spacing: 0.5px; box-shadow: 0 2px 4px rgba(249, 115, 22, 0.3);">RÉSERVER</button>
+<section style="padding: 60px 0; background-color: #fcfcfc;">
+    <div style="max-width: 1100px; margin: 0 auto; padding: 0 20px;">
+
+        <h2 style="font-weight: 900; font-family: sans-serif; text-transform: uppercase; color: #1a2238; font-size: 24px; letter-spacing: 0.2em; margin-bottom: 60px;">
+            Nos Chambres & Suites
+        </h2>
+
+        @if(isset($categories) && $categories->count() > 0)
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px;">
+                @foreach($categories as $index => $cat)
+                    @php
+                        $categoryName = strtolower($cat['name']);
+
+                        // LOGIQUE DE PRIX ET DESCRIPTION PAR CATÉGORIE
+                        if (str_contains($categoryName, 'standard')) {
+                            $dynamicPrice = "25 000";
+                            $dynamicDesc = "L'essentiel du confort : un espace optimisé et fonctionnel, idéal pour vos courts séjours et voyages d'affaires.";
+                        } elseif (str_contains($categoryName, 'luxe')) {
+                            $dynamicPrice = "60 000";
+                            $dynamicDesc = "Élégance et raffinement : profitez d'une vue imprenable et d'un mobilier haut de gamme pour une expérience supérieure.";
+                        } elseif (str_contains($categoryName, 'confort')) {
+                            $dynamicPrice = "45 000";
+                            $dynamicDesc = "Le parfait équilibre : plus d'espace et des équipements pensés pour votre bien-être et une détente totale.";
+                        } elseif (str_contains($categoryName, 'royale')) {
+                            $dynamicPrice = "150 000";
+                            $dynamicDesc = "Le summum du prestige : un service exclusif dans un cadre majestueux, conçu pour ceux qui exigent l'exceptionnel.";
+                        } else {
+                            $dynamicPrice = "35 000";
+                            $dynamicDesc = "Découvrez le charme unique de nos chambres, alliant design moderne et accueil chaleureux pour un séjour réussi.";
+                        }
+
+                        $images = [
+                            'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=1000',
+                            'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=1000',
+                            'https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=1000',
+                            'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=1000'
+                        ];
+                        $currentImage = $images[$index % count($images)];
+                    @endphp
+
+                    <div class="room-card" style="background: white; border-radius: 20px; overflow: hidden; border: 1px solid #eee;">
+
+                        <div class="image-container" style="height: 280px; width: 100%; overflow: hidden; position: relative;">
+                            <img src="{{ $currentImage }}" alt="{{ $cat['name'] }}" style="width: 100%; height: 100%; object-fit: cover;">
+                            <div style="position: absolute; bottom: 15px; left: 15px; background: rgba(26, 34, 56, 0.9); color: white; padding: 8px 15px; border-radius: 5px; font-weight: bold;">
+                                Dès {{ $dynamicPrice }} FCFA
+                            </div>
+                        </div>
+
+                        <div style="padding: 30px;">
+                            <h3 style="font-weight: 800; color: #1a2238; text-transform: uppercase; font-size: 22px; margin-bottom: 10px;">
+                                {{ $cat['name'] }}
+                            </h3>
+
+                            <p style="color: #6b7280; font-size: 15px; line-height: 1.6; margin-bottom: 20px; min-height: 72px;">
+                                {{ $dynamicDesc }}
+                            </p>
+
+                            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px;">
+                                <span class="amenity-tag">❄️ Clim</span>
+                                <span class="amenity-tag">📶 Wi-Fi</span>
+                                <span class="amenity-tag">📺 Smart TV</span>
+                                <span class="amenity-tag">☕ Petit-déj</span>
+                            </div>
+
+                            <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #eee; padding-top: 20px;">
+                                <span style="font-size: 13px; color: #9ca3af;">{{ $cat['count'] }} chambres dispos</span>
+                                <a href="{{ route('category.show', ['type' => $cat['name']]) }}"
+                                   class="btn-visit"
+                                   style="background-color: #1a2238; color: white; padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 12px; text-transform: uppercase;">
+                                     Visiter
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
             </div>
-        </div>
+        @endif
     </div>
-
-    <div style="width: 320px; background: white; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); overflow: hidden; transition: all 0.3s ease-in-out;" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 20px 25px -5px rgba(0,0,0,0.2)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 10px 15px -3px rgba(0,0,0,0.1)';" class="group">
-        <div style="height: 200px; overflow: hidden;">
-            <img src="https://images.unsplash.com/photo-1590490360182-c33d57733427?w=600" style="width: 100%; height: 100%; object-fit: cover;">
-        </div>
-        <div style="padding: 1.5rem;">
-            <h3 style="font-size: 16px; font-weight: 900; text-transform: uppercase; margin-bottom: 8px; color: #1a2238;">Chambre Deluxe</h3>
-            <p style="font-size: 10px; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 20px;">Wi-Fi • Clim • Balcon</p>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-size: 15px; font-weight: 900; color: #1a2238;">165 000 FCFA</span>
-                <button style="background: #f97316; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 11px; font-weight: 900; text-transform: uppercase; cursor: pointer; letter-spacing: 0.5px; box-shadow: 0 2px 4px rgba(249, 115, 22, 0.3);">RÉSERVER</button>
-            </div>
-        </div>
-    </div>
-
-    <div style="width: 320px; background: white; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); overflow: hidden; transition: all 0.3s ease-in-out;" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 20px 25px -5px rgba(0,0,0,0.2)';" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 10px 15px -3px rgba(0,0,0,0.1)';" class="group">
-        <div style="height: 200px; overflow: hidden;">
-            <img src="https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=600" style="width: 100%; height: 100%; object-fit: cover;">
-        </div>
-        <div style="padding: 1.5rem;">
-            <h3 style="font-size: 16px; font-weight: 900; text-transform: uppercase; margin-bottom: 8px; color: #1a2238;">Chambre Standard</h3>
-            <p style="font-size: 10px; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 20px;">Wi-Fi • Clim • Douche</p>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-size: 15px; font-weight: 900; color: #1a2238;">118 000 FCFA</span>
-                <button style="background: #f97316; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 11px; font-weight: 900; text-transform: uppercase; cursor: pointer; letter-spacing: 0.5px; box-shadow: 0 2px 4px rgba(249, 115, 22, 0.3);">RÉSERVER</button>
-            </div>
-        </div>
-    </div>
-
-</div>
 </section>
 <section class="py-16 bg-white">
-    <div class="max-w-7xl mx-auto px-6">
-        <h2 class="text-[#1a2238] text-xl font-black uppercase mb-10 tracking-[0.2em]">Offres & Promotions</h2>
+<h2 style="font-weight: 900; font-family: sans-serif; text-transform: uppercase; color: #1a2238; font-size: 24px; letter-spacing: 0.2em; margin-bottom: 10px;">
+    Offres & Promotions
+</h2>
 
         <div class="flex flex-col lg:flex-row gap-8 items-stretch">
 
