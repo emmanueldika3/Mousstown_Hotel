@@ -100,9 +100,12 @@ Route::get('/chambre/{id}', [HomeController::class, 'showRoom'])->name('rooms.de
 //category
 
 // Route pour afficher toutes les chambres d'une catégorie cliquée
-Route::get('/categorie/{type}', [HomeController::class, 'categoryRooms'])->name('category.show');
+Route::get('/categorie/{type}', [HomeController::class, 'categoryRooms'])->name('rooms.category');
 
 // Route pour le bouton "Visiter" (Détail d'une chambre précise)
 Route::get('/chambre-details/{id}', [HomeController::class, 'roomDetails'])->name('room.visit');
+
+//pour afficher les chambres par catégorie
+Route::get('/categorie/{type}', [App\Http\Controllers\RoomController::class, 'showByCategory'])->name('rooms.category');
 
 require __DIR__.'/auth.php';

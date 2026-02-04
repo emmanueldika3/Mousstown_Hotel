@@ -114,7 +114,7 @@
 
                             <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #eee; padding-top: 20px;">
                                 <span style="font-size: 13px; color: #9ca3af;">{{ $cat['count'] }} chambres dispos</span>
-                                <a href="{{ route('category.show', ['type' => $cat['name']]) }}"
+                                <a href="{{ route('rooms.category', ['type' => $cat['name']]) }}"
                                    class="btn-visit"
                                    style="background-color: #1a2238; color: white; padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 12px; text-transform: uppercase;">
                                      Visiter

@@ -33,4 +33,18 @@ class RoomController extends Controller
         // 3. Retour avec un message de succès
         return back()->with('success', 'La chambre ' . $request->room_number . ' a été ajoutée avec succès !');
     }
+
+    public function showByCategory($type)
+    {
+        // On récupère uniquement les chambres de ce type qui sont disponibles
+        $rooms = Room::where('room_type', $type)
+                     ->where('status', 'disponible')
+                     ->get();
+
+        // On retourne la vue avec les données
+        return view('rooms.category', [
+            'rooms' => $rooms,
+            'categoryName' => $type
+        ]);
+    }
 }
