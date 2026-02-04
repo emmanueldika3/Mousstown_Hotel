@@ -1,0 +1,36 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Room;
+use Illuminate\View\View;
+use Illuminate\Http\Request; // INDISPENSABLE pour le store
+use Illuminate\Http\RedirectResponse;
+
+class RoomController extends Controller
+{
+    // Afficher la liste des chambres
+    public function index(): View
+    {
+        $rooms = Room::all();
+        return view('admin.rooms.index', compact('rooms'));
+    }
+
+    // Enregistrer une nouvelle chambre
+    public function store(Request $request): RedirectResponse
+    {
+        // 1. Validation : on vérifie que les données sont correctes
+        $validated = $request->validate([
+    'room_number' => 'required',
+    'price' => 'required|numeric',
+    'description' => 'nullable',
+    'status' => 'required',
+]);
+
+        // 2. Création en base de données
+        Room::create($validated);
+
+        // 3. Retour avec un message de succès
+        return back()->with('success', 'La chambre ' . $request->room_number . ' a été ajoutée avec succès !');
+    }
+}
