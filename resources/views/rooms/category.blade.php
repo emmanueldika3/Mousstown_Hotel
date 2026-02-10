@@ -107,11 +107,12 @@
                                 <div style="text-align: center;"><span style="display: block; font-size: 18px;">☕</span><span style="font-size: 10px; color: #64748b; font-weight: 700;">CAFE</span></div>
                             </div>
 
-                            <a href="#" style="display: block; width: 100%; background: #1a2238; color: white; text-align: center; padding: 16px; border-radius: 14px; text-decoration: none; font-weight: 800; font-size: 14px; transition: 0.3s;"
-                               onmouseover="this.style.background='#ff8c00'; this.style.transform='scale(1.02)'"
-                               onmouseout="this.style.background='#1a2238'; this.style.transform='scale(1)'">
-                                RÉSERVER CE SÉJOUR
-                            </a>
+                           <a href="{{ route('reservations.create', ['room_id' => $room->id]) }}"
+   style="display: block; width: 100%; background: #1a2238; color: white; text-align: center; padding: 16px; border-radius: 14px; text-decoration: none; font-weight: 800; font-size: 14px; transition: 0.3s;"
+   onmouseover="this.style.background='#ff8c00'; this.style.transform='scale(1.02)'"
+   onmouseout="this.style.background='#1a2238'; this.style.transform='scale(1)'">
+    RÉSERVER CE SÉJOUR
+</a>
                         </div>
                     </div>
                 @endforeach
