@@ -8,31 +8,52 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-    // Affiche ton formulaire personnalisé
+    /**
+     * Gère la tentative de connexion
+     */
     public function login(Request $request)
-{
-    $credentials = $request->validate([
-        'email' => ['required', 'email'],
-        'password' => ['required'],
-    ]);
+    {
+        // 1. Validation des champs
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
 
-    if (Auth::attempt($credentials, $request->remember)) {
-        $request->session()->regenerate();
+        // 2. Tentative de connexion
+        if (Auth::attempt($credentials, $request->remember)) {
 
-        // Redirection intelligente
-        $user = Auth::user();
+            // Sécurité : Régénérer la session pour éviter les fixations de session
+            $request->session()->regenerate();
 
-        // Si tu as une colonne 'role' dans ta table users
-        if ($user->role === 'admin' || $user->email === 'admin@gmail.com') {
-            return redirect()->route('admin.index');
+            $user = Auth::user();
+
+            // 3. REDIRECTION INTELLIGENTE SELON LE RÔLE
+
+            // Cas Admin
+            if ($user->role === 'admin') {
+                return redirect()->route('admin.index');
+            }
+
+            // Cas Client (Dika Emmanuel par exemple)
+            // On utilise 'client.dashboard' tel que défini dans ton web.php
+            return redirect()->intended(route('client.dashboard'));
         }
 
-        // Redirection vers le dashboard client que nous avons conçu
-        return redirect()->intended(route('clients.index'));
+        // 4. Échec de connexion
+        return back()->withErrors([
+            'email' => 'Identifiants incorrects pour Mousstown Hotel.',
+        ])->onlyInput('email');
     }
 
-    return back()->withErrors([
-        'email' => 'Identifiants incorrects pour Mousstown Hotel.',
-    ])->onlyInput('email');
-}
+    /**
+     * Déconnexion de l'utilisateur
+     */
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/');
+    }
 }

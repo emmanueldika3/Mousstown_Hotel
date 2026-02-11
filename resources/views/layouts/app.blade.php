@@ -42,12 +42,24 @@
             </div>
 
             <div style="display: flex; align-items: center; gap: 25px; border-left: 2px solid #4a5568; padding-left: 25px;">
-                <a href="/login" style="font-size: 14px; font-weight: 900; text-transform: uppercase; color: white; text-decoration: none; transition: 0.3s;" onmouseover="this.style.color='#f97316'" onmouseout="this.style.color='white'">
+                <a href="{{ route('login') }}" style="font-size: 14px; font-weight: 900; text-transform: uppercase; color: white; text-decoration: none; transition: 0.3s;" onmouseover="this.style.color='#f97316'" onmouseout="this.style.color='white'">
                     Connexion
                 </a>
-                <a href="#" style="background: #f97316; color: white; padding: 0.9rem 2rem; border-radius: 50px; font-size: 12px; font-weight: 900; text-transform: uppercase; text-decoration: none; transition: 0.3s; display: inline-block;" onmouseover="this.style.transform='scale(1.1)';" onmouseout="this.style.transform='scale(1)';">
-                    Ma Réservation
-                </a>
+                @auth
+    <a href="{{ route('client.dashboard') }}"
+       style="background: #f97316; color: white; padding: 0.9rem 2rem; border-radius: 50px; font-size: 12px; font-weight: 900; text-transform: uppercase; text-decoration: none; transition: 0.3s; display: inline-block;"
+       onmouseover="this.style.transform='scale(1.1)';"
+       onmouseout="this.style.transform='scale(1)';">
+       <i class="fa-solid fa-circle-user" style="margin-right: 8px;"></i> Mon Espace
+    </a>
+@else
+    <a href="{{ route('login') }}"
+       style="background: #f97316; color: white; padding: 0.9rem 2rem; border-radius: 50px; font-size: 12px; font-weight: 900; text-transform: uppercase; text-decoration: none; transition: 0.3s; display: inline-block;"
+       onmouseover="this.style.transform='scale(1.1)';"
+       onmouseout="this.style.transform='scale(1)';">
+       Ma Réservation
+    </a>
+@endauth
             </div>
         </div>
 

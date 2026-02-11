@@ -13,17 +13,18 @@ class ClientController extends Controller
      * Affiche le dashboard du client avec ses réservations.
      */
     public function index()
-    {
-        $user = Auth::user();
+{
+    $user = auth()->user();
+    $myBookings = \App\Models\Booking::where('user_id', $user->id)->with('room')->latest()->get();
 
-        // On récupère les réservations de l'utilisateur avec les infos de la chambre
-        $bookings = Booking::where('user_id', $user->id)
-            ->with('room')
-            ->latest()
-            ->get();
+    // Nouvelles options : Statistiques simples
+    $stats = [
+        'total_spent' => $myBookings->where('is_paid', true)->sum('total_price'),
+        'active_reservations' => $myBookings->where('status', 'confirmée')->count(),
+    ];
 
-        return view('clients.index', compact('user', 'bookings'));
-    }
+    return view('clients.dashboard', compact('user', 'myBookings', 'stats'));
+}
 
     /**
      * Permet au client d'annuler sa propre réservation (si en attente).
