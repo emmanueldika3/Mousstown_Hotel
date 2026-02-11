@@ -10,6 +10,15 @@
             <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 30px; align-items: start;">
 
                 <div style="background: white; padding: 40px; border-radius: 30px; shadow: 0 10px 40px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
+                    @if ($errors->any())
+    <div style="background: #fee2e2; color: #b91c1c; padding: 1rem; border-radius: 10px; margin-bottom: 1rem;">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
                     <form action="{{ route('reservations.store') }}" method="POST">
                         @csrf
                         <input type="hidden" name="room_id" value="{{ $room->id }}">

@@ -6,15 +6,23 @@ use Illuminate\Database\Eloquent\Model;
 
 class Booking extends Model
 {
-    protected $fillable = ['user_id', 'room_id', 'check_in', 'check_out', 'total_price', 'status'];
+    // C'est cette liste qui autorise l'écriture dans la base
+   protected $fillable = [
+    'room_id',
+    'user_id',
+    'check_in',
+    'check_out',
+    'total_price',
+    'status'
+];
 
-    // Une réservation appartient à un utilisateur
-    public function user() {
-        return $this->belongsTo(User::class);
-    }
-
-    // Une réservation concerne une chambre
-    public function room() {
+    // Indispensable pour que $booking->room fonctionne dans la vue
+    public function room()
+    {
         return $this->belongsTo(Room::class);
     }
+
+    public function user() {
+    return $this->belongsTo(User::class);
+}
 }
