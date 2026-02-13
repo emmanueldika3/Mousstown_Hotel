@@ -47,4 +47,17 @@ class RoomController extends Controller
             'categoryName' => $type
         ]);
     }
+
+public function showRooms()
+{
+    // On récupère les catégories et on compte le nombre de chambres par type
+    $categories = \App\Models\Room::select('type as name')
+        ->selectRaw('count(*) as count')
+        ->groupBy('type')
+        ->get();
+
+    return view('rooms.showRooms', compact('categories'));
+}
+
+
 }

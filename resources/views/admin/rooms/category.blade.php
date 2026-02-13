@@ -74,7 +74,7 @@
                     <div class="room-card">
                         <div class="room-slider">
                             <div class="slides">
-                                {{-- Ici j'utilise des images aléatoires, mais tu pourras les lier à ta base plus tard --}}
+
                                 <img src="https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800" alt="Vue 1">
                                 <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800" alt="Vue 2">
                                 <img src="https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=800" alt="Vue 3">
