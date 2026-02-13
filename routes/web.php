@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\ContactController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,6 +27,8 @@ Route::get('/login', function () {
     return view('admin.auth.login');
 })->name('login');
 Route::post('/login', [LoginController::class, 'login']);
+
+Route::post('/contact/send', [ContactController::class, 'store'])->name('contact.store');
 
 
 // Route simple pour afficher la vue contact

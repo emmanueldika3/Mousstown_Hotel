@@ -52,40 +52,78 @@
             </div>
 
             <div style="flex: 1.5; min-width: 350px; padding: 4rem 3.5rem; background: white;">
-                <h2 style="font-size: 1.8rem; font-weight: 800; color: #1a202c; margin-bottom: 2.5rem;">Envoyez un <span style="color: #f97316;">Message</span></h2>
+    <h2 style="font-size: 1.8rem; font-weight: 800; color: #1a202c; margin-bottom: 2.5rem;">
+        Envoyez un <span style="color: #f97316;">Message</span>
+    </h2>
 
-                <form action="#" method="POST">
-                    @csrf
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
-                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                            <label style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #718096;">Nom Complet</label>
-                            <input type="text" placeholder="Ex: Votre nom" style="padding: 1rem; border: 1px solid #edf2f7; border-radius: 10px; outline: none; background: #f8fafc;">
-                        </div>
-                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                            <label style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #718096;">Email</label>
-                            <input type="email" placeholder="Votre Email" style="padding: 1rem; border: 1px solid #edf2f7; border-radius: 10px; outline: none; background: #f8fafc;">
-                        </div>
-                    </div>
+    <form action="{{ route('contact.store') }}" method="POST">
+        @csrf
 
-                    <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.5rem;">
-                        <label style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #718096;">Sujet</label>
-                        <select style="padding: 1rem; border: 1px solid #edf2f7; border-radius: 10px; outline: none; background: #f8fafc;">
-                            <option>Réservation de chambre</option>
-                            <option>Service Conciergerie</option>
-                            <option>Autre demande</option>
-                        </select>
-                    </div>
+        @if(session('success'))
+            <div style="background: #f0fff4; color: #276749; padding: 1.2rem; border-radius: 15px; border: 1px solid #c6f6d5; margin-bottom: 2rem; display: flex; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-circle-check"></i>
+                {{ session('success') }}
+            </div>
+        @endif
 
-                    <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 2.5rem;">
-                        <label style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #718096;">Message</label>
-                        <textarea rows="4" placeholder="Comment pouvons-nous vous aider ?" style="padding: 1rem; border: 1px solid #edf2f7; border-radius: 10px; outline: none; background: #f8fafc; resize: none;"></textarea>
-                    </div>
-                    <button type="submit" style="width: 100%; background: #f97316; color: white; padding: 1.2rem; border-radius: 12px; border: none; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 20px rgba(249, 115, 22, 0.2);" onmouseover="this.style.background='#1a202c'; this.style.transform='translateY(-3px)'" onmouseout="this.style.background='#f97316'; this.style.transform='translateY(0)'">
-                        Envoyer ma demande
-                    </button>
-                </form>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <label style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #718096;">Nom</label>
+                <input type="text" name="name" value="{{ old('name') }}" placeholder="Votre nom"
+                    style="padding: 1rem; border: 1.5px solid {{ $errors->has('name') ? '#e53e3e' : '#edf2f7' }}; border-radius: 12px; outline: none; background: #f8fafc; font-size: 1rem;">
+                @error('name')
+                    <span style="color: #e53e3e; font-size: 0.75rem; font-weight: 600;">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <label style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #718096;">Email</label>
+                <input type="email" name="email" value="{{ old('email') }}" placeholder="Votre email"
+                    style="padding: 1rem; border: 1.5px solid {{ $errors->has('email') ? '#e53e3e' : '#edf2f7' }}; border-radius: 12px; outline: none; background: #f8fafc; font-size: 1rem;">
+                @error('email')
+                    <span style="color: #e53e3e; font-size: 0.75rem; font-weight: 600;">{{ $message }}</span>
+                @enderror
             </div>
         </div>
+
+        <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.5rem;">
+    <label style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #718096;">Sujet de votre demande</label>
+    <div style="position: relative;">
+        <select name="subject"
+            style="width: 100%; padding: 1rem; border: 1.5px solid {{ $errors->has('subject') ? '#e53e3e' : '#edf2f7' }}; border-radius: 12px; outline: none; background: #f8fafc; font-size: 1rem; appearance: none; cursor: pointer; color: #1a202c;">
+            <option value="" disabled {{ old('subject') == '' ? 'selected' : '' }}>Choisissez une option</option>
+            <option value="Réservation de Suite" {{ old('subject') == 'Réservation de Suite' ? 'selected' : '' }}>Réservation de Suite</option>
+            <option value="Service Conciergerie" {{ old('subject') == 'Service Conciergerie' ? 'selected' : '' }}>Service Conciergerie</option>
+            <option value="Événement Privé" {{ old('subject') == 'Événement Privé' ? 'selected' : '' }}>Événement Privé</option>
+            <option value="Réclamation / Feedback" {{ old('subject') == 'Réclamation / Feedback' ? 'selected' : '' }}>Réclamation / Feedback</option>
+            <option value="Autre demande" {{ old('subject') == 'Autre demande' ? 'selected' : '' }}>Autre demande</option>
+        </select>
+        <div style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); pointer-events: none; color: #f97316;">
+            <i class="fa-solid fa-chevron-down"></i>
+        </div>
+    </div>
+    @error('subject')
+        <span style="color: #e53e3e; font-size: 0.75rem; font-weight: 600;">{{ $message }}</span>
+    @enderror
+</div>
+
+        <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 2.5rem;">
+            <label style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #718096;">Message</label>
+            <textarea name="message" rows="5" placeholder="Comment pouvons-nous vous aider ?"
+                style="padding: 1rem; border: 1.5px solid {{ $errors->has('message') ? '#e53e3e' : '#edf2f7' }}; border-radius: 12px; outline: none; background: #f8fafc; resize: none; font-size: 1rem;">{{ old('message') }}</textarea>
+            @error('message')
+                <span style="color: #e53e3e; font-size: 0.75rem; font-weight: 600;">{{ $message }}</span>
+            @enderror
+        </div>
+
+        <button type="submit"
+            style="width: 100%; background: #f97316; color: white; padding: 1.2rem; border-radius: 12px; border: none; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: 0.3s; box-shadow: 0 10px 20px rgba(249, 115, 22, 0.2);"
+            onmouseover="this.style.background='#1a202c'; this.style.transform='translateY(-3px)'"
+            onmouseout="this.style.background='#f97316'; this.style.transform='translateY(0)'">
+            Envoyer ma demande
+        </button>
+    </form>
+</div>        </div>
     </div>
 
     <div style="max-width: 1150px; margin: 0 auto 5rem; padding: 0 1rem;">
