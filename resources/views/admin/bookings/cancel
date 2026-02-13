@@ -1,0 +1,4 @@
+<form action="{{ route('client.bookings.cancel', $booking->id) }}" method="POST">
+    @csrf
+    <button type="submit">Annuler</button>
+</form>

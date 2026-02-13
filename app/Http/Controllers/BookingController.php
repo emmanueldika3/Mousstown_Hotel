@@ -10,7 +10,9 @@ use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
 {
-    // CÔTÉ CLIENT : Enregistrer la réservation
+    /**
+     * CÔTÉ CLIENT : Enregistrer une nouvelle demande de réservation
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -21,13 +23,15 @@ class BookingController extends Controller
 
         $room = Room::findOrFail($request->room_id);
 
-        // 1. Calcul de la durée et du prix total
+        // Calcul de la durée et du prix total
         $start = Carbon::parse($request->check_in);
         $end = Carbon::parse($request->check_out);
         $nights = $start->diffInDays($end);
+
+        // Sécurité : au moins 1 nuit facturée
+        $nights = $nights <= 0 ? 1 : $nights;
         $total_price = $nights * $room->price;
 
-        // 2. Création de la réservation
         Booking::create([
             'user_id' => Auth::id(),
             'room_id' => $room->id,
@@ -40,46 +44,64 @@ class BookingController extends Controller
         return back()->with('success', 'Demande de réservation envoyée ! Nous vous contacterons pour la confirmation.');
     }
 
-    // CÔTÉ ADMIN : Liste des réservations
+    /**
+     * CÔTÉ ADMIN : Liste toutes les réservations
+     */
     public function index()
     {
-        $bookings = Booking::has('user')->with(['user', 'room'])->latest()->get();
+        // On récupère les réservations avec les relations user et room
+        $bookings = Booking::with(['user', 'room'])->latest()->get();
         return view('admin.bookings.index', compact('bookings'));
     }
 
-    // CÔTÉ ADMIN : Confirmer la réservation
+    /**
+     * CÔTÉ ADMIN : Confirmer une réservation et occuper la chambre
+     */
     public function confirm($id)
     {
         $booking = Booking::findOrFail($id);
+
+        // Mise à jour de la réservation
         $booking->update(['status' => 'confirmée']);
 
-        // IMPORTANT : On change le statut de la chambre
-        $booking->room->update(['status' => 'occupé']);
+        // IMPORTANT : On change le statut de la chambre liée
+        if ($booking->room) {
+            $booking->room->update(['status' => 'occupé']);
+        }
 
         return back()->with('success', 'Réservation confirmée. La chambre est désormais marquée comme occupée.');
     }
 
-public function cancel($id)
-{
-    $booking = Booking::findOrFail($id);
+    /**
+     * CÔTÉ CLIENT : Annuler sa propre réservation
+     */
+    public function cancel($id)
+    {
+        $booking = Booking::findOrFail($id);
 
-    // Sécurité 1 : Vérifier que c'est bien la réservation du client connecté
-    if ($booking->user_id !== auth()->id()) {
-        return back()->with('error', 'Action non autorisée.');
+        // Sécurité 1 : Vérifier que c'est bien la réservation du client connecté
+        if ($booking->user_id !== Auth::id()) {
+            return back()->with('error', 'Action non autorisée.');
+        }
+
+        // Sécurité 2 : Vérifier le délai de 48h si la réservation était déjà confirmée
+        if ($booking->status === 'confirmée') {
+            $now = Carbon::now();
+            $checkIn = Carbon::parse($booking->check_in);
+
+            if ($now->diffInHours($checkIn, false) < 48) {
+                return back()->with('error', 'Impossible d\'annuler moins de 48h avant l\'arrivée pour une réservation confirmée.');
+            }
+        }
+
+        // Action : On passe en statut "annulée"
+        $booking->update(['status' => 'annulée']);
+
+        // Si la chambre était occupée, on la libère
+        if ($booking->room) {
+            $booking->room->update(['status' => 'disponible']);
+        }
+
+        return back()->with('success', 'Votre réservation a été annulée avec succès.');
     }
-
-    // Sécurité 2 : Vérifier le délai (Ex: 48h avant le check-in)
-    $now = Carbon::now();
-    $checkIn = Carbon::parse($booking->check_in);
-
-    if ($now->diffInHours($checkIn, false) < 48 && $booking->status == 'confirmée') {
-        return back()->with('error', 'Impossible d\'annuler moins de 48h avant l\'arrivée pour une réservation confirmée. Contactez la réception.');
-    }
-
-    // Action : On passe en statut "annulée" et on libère la chambre
-    $booking->update(['status' => 'annulée']);
-    $booking->room->update(['status' => 'disponible']);
-
-    return back()->with('success', 'Votre réservation a été annulée avec succès.');
-}
 }

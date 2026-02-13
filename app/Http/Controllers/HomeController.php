@@ -59,4 +59,9 @@ class HomeController extends Controller
         // C'est ici qu'on affichera les 3-4 photos pour la "visite"
         return view('rooms.show', compact('room'));
     }
+
+public function services()
+    {
+        return view('services.services');
+    }
 }

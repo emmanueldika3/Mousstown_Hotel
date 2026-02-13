@@ -72,7 +72,7 @@
                 <div style="display: flex; gap: 30px; font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;">
                     <a href="/" class="nav-link {{ request()->is('/') ? 'active' : '' }}">Accueil</a>
                     <a href="{{ route('rooms.showRooms') }}" class="nav-link {{ Route::is('rooms.showRooms') ? 'active' : '' }}">Chambres</a>
-                    <a href="/Services" class="nav-link {{ request()->is('Services*') ? 'active' : '' }}">Nos Services</a>
+                    <a href="{{ route('services') }}" class="nav-link {{ request()->is('services*') ? 'active' : '' }}">Nos Services</a>
                     <a href="/Contact" class="nav-link {{ request()->is('Contact*') ? 'active' : '' }}">Contact</a>
                 </div>
 
@@ -150,12 +150,130 @@
     <main style="max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; width: 100%;">
         {{ $slot }}
     </main>
-
-    <footer style="background: #1a202c; color: #a0aec0; padding: 4rem 1.5rem; margin-top: auto;">
-        <div style="max-width: 1200px; margin: 0 auto; text-align: center;">
-            <p>&copy; 2026 Mousstown_Hôtel - Tous droits réservés.</p>
+    <div style="position: fixed; bottom: 30px; right: 30px; z-index: 9999; display: flex; align-items: center; background: white; padding: 6px 18px 6px 8px; border-radius: 50px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); cursor: pointer; border: 1px solid #e2e8f0; transition: 0.3s;"
+         onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div style="background: #f97316; width: 35px; height: 35px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white;">
+            <i class="fa-solid fa-comment-dots"></i>
         </div>
-    </footer>
+        <div style="margin-left: 10px;">
+            <p style="margin: 0; font-size: 11px; font-weight: 900; color: #1a2238; text-transform: uppercase;">Chat en direct</p>
+            <div style="display: flex; align-items: center;">
+                <span class="pulse-dot" style="width: 6px; height: 6px; background: #22c55e; border-radius: 50%; margin-right: 5px;"></span>
+                <span style="font-size: 9px; font-weight: 700; color: #64748b;">DISPONIBLE 24/7</span>
+            </div>
+        </div>
+    </div>
+
+   <style>
+    /* Animation des services au survol */
+    .service-item {
+        transition: all 0.3s ease-in-out;
+    }
+    .service-item:hover {
+        transform: scale(1.08) translateX(10px); /* Zoom + décalage vers la droite */
+        color: #f97316 !important;
+    }
+    .service-item i {
+        transition: transform 0.3s ease;
+    }
+    .service-item:hover i {
+        transform: rotate(10deg); /* Rotation de l'icône au survol */
+    }
+
+    /* Effet sur les réseaux sociaux */
+    .social-link {
+        transition: all 0.3s ease;
+        color: #cbd5e0;
+    }
+    .social-link:hover {
+        color: #f97316 !important;
+        transform: translateY(-5px);
+    }
+</style>
+
+<footer style="background: #1a202c; color: #a0aec0; padding: 4rem 1.5rem;">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 3rem;">
+
+        <div style="flex: 1.5; min-width: 250px;">
+            <h3 style="color: white; font-weight: 900; text-transform: uppercase; font-size: 0.9rem; margin-bottom: 1.2rem; letter-spacing: 1px;">Mousstown_Hôtel</h3>
+            <p style="font-size: 0.85rem; line-height: 1.8; margin-bottom: 1.5rem;">L'excellence et le luxe au cœur de la ville. Une expérience inoubliable pour chaque visiteur au Cameroun.</p>
+            <div style="font-size: 0.8rem; display: flex; flex-direction: column; gap: 10px;">
+                <span><i class="fa-solid fa-location-dot" style="color: #f97316; margin-right: 8px;"></i> Rue du Luxe, Douala, Cameroun</span>
+                <span><i class="fa-solid fa-phone" style="color: #f97316; margin-right: 8px;"></i> +237 600 000 000</span>
+                <span><i class="fa-solid fa-envelope" style="color: #f97316; margin-right: 8px;"></i> contact@mousstown-hotel.com</span>
+            </div>
+        </div>
+
+        <div style="flex: 1.2; min-width: 200px;">
+            <h3 style="color: white; font-weight: 900; text-transform: uppercase; font-size: 0.8rem; margin-bottom: 1.2rem; letter-spacing: 1px;">Nos Services Luxe</h3>
+            <ul style="list-style: none; padding: 0; font-size: 0.85rem; line-height: 2.2;">
+                <li class="service-item" style="margin-bottom: 8px;">
+                    <a href="/chambres" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-solid fa-bed" style="width: 20px; color: #f97316;"></i> Chambres & Suites
+                    </a>
+                </li>
+                <li class="service-item" style="margin-bottom: 8px;">
+                    <a href="#" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-solid fa-utensils" style="width: 20px; color: #f97316;"></i> Restaurant Gastro
+                    </a>
+                </li>
+                <li class="service-item" style="margin-bottom: 8px;">
+                    <a href="#" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-solid fa-spa" style="width: 20px; color: #f97316;"></i> Spa & Détente
+                    </a>
+                </li>
+                <li class="service-item" style="margin-bottom: 8px;">
+                    <a href="#" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-solid fa-dumbbell" style="width: 20px; color: #f97316;"></i> Salle de Fitness
+                    </a>
+                </li>
+                <li class="service-item" style="margin-bottom: 8px;">
+                    <a href="#" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-solid fa-swimming-pool" style="width: 20px; color: #f97316;"></i> Piscine Panoramique
+                    </a>
+                </li>
+                <li class="service-item" style="margin-bottom: 8px;">
+                    <a href="#" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-solid fa-car" style="width: 20px; color: #f97316;"></i> Navette VIP
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div style="flex: 1.5; min-width: 280px; text-align: right;">
+            <h3 style="color: white; font-weight: 900; text-transform: uppercase; font-size: 0.8rem; margin-bottom: 1.2rem; letter-spacing: 1px;">Newsletter</h3>
+            <p style="font-size: 0.75rem; margin-bottom: 1.5rem;">Offres exclusives directement dans votre boîte mail.</p>
+
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 2rem; height: 40px;">
+                <input type="email" placeholder="Votre email" style="background: #2d3748; border: none; padding: 0 1rem; color: white; border-radius: 8px 0 0 8px; outline: none; font-size: 0.8rem; width: 65%;">
+                <button style="background: #f97316; color: white; border: none; padding: 0 15px; border-radius: 0 8px 8px 0; font-weight: 900; cursor: pointer; transition: 0.3s;" onmouseover="this.style.background='white'; this.style.color='#1a202c'" onmouseout="this.style.background='#f97316'; this.style.color='white'">OK</button>
+            </div>
+
+            <h3 style="color: white; font-weight: 900; text-transform: uppercase; font-size: 0.7rem; margin-bottom: 1rem;">Suivez l'expérience</h3>
+            <div style="display: flex; justify-content: flex-end; gap: 1.2rem;">
+                <a href="#" class="social-link"><i class="fa-brands fa-facebook" style="font-size: 1.3rem;"></i></a>
+                <a href="#" class="social-link"><i class="fa-brands fa-instagram" style="font-size: 1.3rem;"></i></a>
+                <a href="#" class="social-link"><i class="fa-brands fa-tiktok" style="font-size: 1.3rem;"></i></a>
+                <a href="#" class="social-link"><i class="fa-brands fa-whatsapp" style="font-size: 1.3rem;"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <div style="max-width: 1200px; margin: 3rem auto 0; padding-top: 2rem; border-top: 1px solid #2d3748; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+        <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">
+            &copy; 2026 Mousstown_Hôtel - Luxe & Prestige.
+        </div>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <span style="font-size: 9px; font-weight: 800; color: #4a5568; text-transform: uppercase;">Paiement sécurisé :</span>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <i class="fa-brands fa-cc-visa" style="font-size: 1.5rem; color: white; opacity: 0.8;"></i>
+                <i class="fa-brands fa-cc-mastercard" style="font-size: 1.5rem; color: white; opacity: 0.8;"></i>
+                <span style="background: #2d3748; color: #f97316; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; border: 1px solid #4a5568;">OM</span>
+                <span style="background: #2d3748; color: #facc15; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; border: 1px solid #4a5568;">MOMO</span>
+            </div>
+        </div>
+    </div>
+</footer>
 
 </body>
 </html>

@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\LoginController;
@@ -12,20 +11,17 @@ use App\Http\Controllers\ReservationController;
 
 /*
 |--------------------------------------------------------------------------
-| ROUTES PUBLIQUES (Accessibles à tous)
+| ROUTES PUBLIQUES
 |--------------------------------------------------------------------------
 */
-
 Route::get('/', [HomeController::class, 'index'])->name('home');
-
-// Affichage du catalogue (Ton menu Chambre)
 Route::get('/nos-chambres', [RoomController::class, 'showRooms'])->name('rooms.showRooms');
-// Liste filtrée par catégorie
 Route::get('/nos-chambres/categorie/{type}', [RoomController::class, 'showByCategory'])->name('rooms.category');
-// Détails d'une chambre spécifique
 Route::get('/chambre-details/{id}', [HomeController::class, 'roomDetails'])->name('room.visit');
 
-// Authentification
+// AJOUT DE LA ROUTE SERVICES EN PUBLIC
+Route::get('/services', [HomeController::class, 'services'])->name('services');
+
 Route::get('/login', function () {
     return view('admin.auth.login');
 })->name('login');
@@ -33,38 +29,33 @@ Route::post('/login', [LoginController::class, 'login']);
 
 /*
 |--------------------------------------------------------------------------
-| SYSTÈME DE RÉSERVATION (Nécessite souvent d'être connecté)
+| SYSTÈME DE RÉSERVATION
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
-    Route::get('/reserver-chambre/{room_id}', [ReservationController::class, 'create'])->name('reservations.create');
-    Route::post('/reserver-valider', [ReservationController::class, 'store'])->name('reservations.store');
+    Route::get('/reservations/create', [ReservationController::class, 'create'])->name('reservations.create');
+    Route::post('/reservations', [ReservationController::class, 'store'])->name('reservations.store');
+    Route::post('/bookings/{id}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
 });
 
 /*
 |--------------------------------------------------------------------------
-| ROUTES CLIENTS (Espace Personnel)
+| ROUTES CLIENTS (mon-espace)
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->prefix('mon-espace')->name('client.')->group(function () {
     Route::get('/dashboard', [ClientController::class, 'index'])->name('dashboard');
     Route::get('/profil', [ClientController::class, 'profile'])->name('profile');
     Route::get('/mes-reservations', [ClientController::class, 'index'])->name('reservations');
-
-    // Annulation
-    Route::post('/bookings/{id}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
 });
 
 /*
 |--------------------------------------------------------------------------
-| ROUTES ADMIN (Rôle Admin requis)
+| ROUTES ADMIN (admin)
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-
     Route::get('/index', [AdminController::class, 'index'])->name('index');
-
-    // Gestion CRUD des chambres
     Route::resource('rooms', RoomController::class);
 
     // Gestion des réservations par l'admin
