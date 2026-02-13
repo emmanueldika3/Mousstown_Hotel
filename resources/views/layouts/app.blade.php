@@ -73,7 +73,7 @@
                     <a href="/" class="nav-link {{ request()->is('/') ? 'active' : '' }}">Accueil</a>
                     <a href="{{ route('rooms.showRooms') }}" class="nav-link {{ Route::is('rooms.showRooms') ? 'active' : '' }}">Chambres</a>
                     <a href="{{ route('services') }}" class="nav-link {{ request()->is('services*') ? 'active' : '' }}">Nos Services</a>
-                    <a href="/Contact" class="nav-link {{ request()->is('Contact*') ? 'active' : '' }}">Contact</a>
+                    <a href="/Contact" class="nav-link {{ request()->is('Contact*') ? 'active' : '' }}">nous Contacter</a>
                 </div>
 
                 <div style="display: flex; align-items: center; gap: 25px; border-left: 2px solid #4a5568; padding-left: 25px;">

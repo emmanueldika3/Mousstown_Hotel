@@ -27,6 +27,12 @@ Route::get('/login', function () {
 })->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 
+
+// Route simple pour afficher la vue contact
+Route::get('/Contact', function () {
+    return view('contact');
+})->name('contact');
+
 /*
 |--------------------------------------------------------------------------
 | SYSTÈME DE RÉSERVATION
