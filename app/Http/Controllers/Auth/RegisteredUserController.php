@@ -14,41 +14,41 @@ use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
-    /**
-     * Display the registration view.
-     */
     public function create(): View
     {
         return view('auth.register');
     }
 
-    /**
-     * Handle an incoming registration request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
     public function store(Request $request): RedirectResponse
     {
+
         $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'phone' => ['required', 'string', 'max:20'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'name'       => ['required', 'string', 'max:255'],
+            'email'      => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'phone'      => ['required', 'string', 'max:20'],
+            'password'   => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
         $user = User::create([
-        'first_name' => $request->first_name,
-        'name' => $request->name,
-        'email' => $request->email,
-        'phone' => $request->phone, // Ajoute cette ligne
-        'password' => Hash::make($request->password),
-]);
+            'first_name' => $request->first_name,
+            'name'       => $request->name,
+            'email'      => $request->email,
+            'phone'      => $request->phone,
+            'password'   => Hash::make($request->password),
+            'role'       => 'client', // On définit le rôle par défaut ici
+        ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('clients.index', absolute: false));
+        // LOGIQUE DE REDIRECTION DYNAMIQUE
+        // Si c'est un admin, il va sur son index, sinon sur son dashboard client
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.index');
+        }
+
+        return redirect()->route('client.dashboard');
     }
 }

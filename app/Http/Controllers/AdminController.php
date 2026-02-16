@@ -4,11 +4,26 @@ namespace App\Http\Controllers;
 
 use App\Models\Room;
 use App\Models\User;
-// use App\Models\Booking; // Garde-le en commentaire si la table n'existe pas encore
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
+    /**
+     * Sécurise l'accès : seul un admin peut utiliser ce contrôleur.
+     */
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            if (Auth::check() && Auth::user()->role === 'admin') {
+                return $next($request);
+            }
+
+            // Si pas admin, on redirige avec un message d'erreur
+            return redirect('/')->with('error', 'Accès réservé aux administrateurs.');
+        });
+    }
+
     public function index()
     {
         // On récupère les vrais chiffres de la base de données
@@ -16,18 +31,17 @@ class AdminController extends Controller
             'revenue' => 2450000,
             'bookings_count' => 24,
             'rooms_available' => Room::where('status', 'disponible')->count(),
-            'total_rooms' => Room::count(), // INDISPENSABLE pour éviter l'erreur "Undefined key"
-            'total_clients' => User::count(), // Compte tous les utilisateurs inscrits
+            'total_rooms' => Room::count(),
+            'total_clients' => User::count(),
         ];
 
-        // Données fictives pour le tableau (en attendant d'avoir des vraies réservations)
+        // Données fictives pour le tableau
         $recentBookings = [
             ['client' => 'Samuel Eto\'o', 'room' => 'Suite 302', 'status' => 'Confirmé', 'price' => '150.000'],
             ['client' => 'Didier Drogba', 'room' => 'Chambre 105', 'status' => 'En attente', 'price' => '45.000'],
             ['client' => 'Francis Ngannou', 'room' => 'Suite Royale', 'status' => 'Confirmé', 'price' => '250.000'],
         ];
 
-        // Vérifie bien que ton fichier s'appelle admin/dashboard.blade.php ou admin/index.blade.php
         return view('admin.index', compact('stats', 'recentBookings'));
     }
 }

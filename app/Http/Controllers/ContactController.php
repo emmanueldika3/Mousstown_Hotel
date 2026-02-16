@@ -9,9 +9,20 @@ use App\Models\Contact;
 
 class ContactController extends Controller
 {
+    /**
+     * Affiche la page de contact (C'est ce qui manquait !)
+     */
+    public function index()
+    {
+        return view('contact'); 
+    }
+
+    /**
+     * Enregistre le message de contact
+     */
     public function store(Request $request)
     {
-        // 1. Création automatique si absente
+        // 1. Création de la table à la volée si elle n'existe pas
         if (!Schema::hasTable('contacts')) {
             Schema::create('contacts', function (Blueprint $table) {
                 $table->id();
@@ -23,15 +34,15 @@ class ContactController extends Controller
             });
         }
 
-        // 2. Validation
+        // 2. Validation des données
         $validated = $request->validate([
-            'name' => 'required',
+            'name' => 'required|string|max:255',
             'email' => 'required|email',
-            'subject' => 'required',
+            'subject' => 'required|string|max:255',
             'message' => 'required',
         ]);
 
-        // 3. Enregistrement
+        // 3. Enregistrement dans la base de données
         Contact::create($validated);
 
         return back()->with('success', 'Félicitations ! Votre message a été enregistré.');

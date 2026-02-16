@@ -13,11 +13,14 @@ class AdminMiddleware
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-  public function handle(Request $request, Closure $next)
+ public function handle(Request $request, Closure $next)
 {
-    if (auth()->check() && auth()->user()->isAdmin()) {
+    // On vérifie si l'utilisateur est connecté ET s'il est admin
+    if (auth()->check() && auth()->user()->role === 'admin') {
         return $next($request);
     }
-    return redirect('/')->with('error', 'Accès interdit.');
+
+    // Sinon, on le renvoie vers l'accueil avec un message d'erreur
+    return redirect('/')->with('error', "Accès refusé. Vous n'êtes pas administrateur.");
 }
 }

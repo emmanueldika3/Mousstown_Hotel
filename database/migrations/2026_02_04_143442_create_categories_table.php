@@ -9,13 +9,16 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
+   public function up(): void
+{
+    // On vérifie d'abord si elle n'existe pas déjà pour éviter l'erreur SQL
+    if (!Schema::hasTable('categories')) {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
         });
     }
+}
 
     /**
      * Reverse the migrations.

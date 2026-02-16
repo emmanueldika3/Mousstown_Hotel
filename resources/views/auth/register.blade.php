@@ -16,6 +16,15 @@
             <h2 style="color: white; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin: 0; font-size: 1.3rem;">Créer mon compte</h2>
             <p style="color: #cbd5e0; font-size: 9px; margin-top: 5px; text-transform: uppercase; font-weight: 700; letter-spacing: 1px;">L'excellence commence ici</p>
         </div>
+        @if ($errors->any())
+    <div style="background: #fee2e2; border: 1px solid #ef4444; color: #b91c1c; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+        <ul style="margin: 0; padding-left: 20px;">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 
         <form method="POST" action="{{ route('register') }}" style="padding: 2rem 2.5rem;">
             @csrf <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">

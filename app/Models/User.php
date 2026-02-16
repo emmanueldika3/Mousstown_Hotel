@@ -5,28 +5,33 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Models\Service; // Assurez-vous que ce modèle existe
-use App\Models\RoomBooking; // Importez votre modèle de réservation de chambre
+use App\Models\Service;
+use App\Models\RoomBooking;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+
 
     protected $fillable = [
-        'first_name',
         'name',
-        'prenom',
+        'first_name', // OBLIGATOIRE
         'email',
-        'phone',
+        'phone',      // OBLIGATOIRE
         'password',
-        'role', // N'oubliez pas d'ajouter 'role' si vous l'utilisez
+        'role',
     ];
 
+    /**
+     * Les attributs cachés pour la sérialisation.
+     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
+    /**
+     * Le cast des attributs.
+     */
     protected function casts(): array
     {
         return [
@@ -38,7 +43,7 @@ class User extends Authenticatable
     // --- RELATIONS ---
 
     /**
-     * Relation avec les réservations de chambres
+     * Relation avec les réservations de chambres (Un utilisateur a plusieurs réservations)
      */
     public function roomBookings()
     {
@@ -46,31 +51,34 @@ class User extends Authenticatable
     }
 
     /**
-     * Relation avec les services de l'hôtel (Spa, Resto, etc.)
+     * Relation avec les services de l'hôtel (Relation Many-to-Many via table pivot)
      */
     public function services()
     {
-        // Correction : On utilise le modèle Service de Laravel, pas l'interface Symfony
         return $this->belongsToMany(Service::class, 'service_user')
-                    ->withPivot('booking_date', 'status')
+                    ->withPivot('status', 'booking_date')
                     ->withTimestamps();
     }
 
-    // --- LOGIQUE MÉTIER ---
+    // --- LOGIQUE MÉTIER (LOGIC) ---
 
     /**
-     * Vérifie si l'utilisateur est administrateur
+     * Vérifie si l'utilisateur possède les droits administrateur
      */
-    public function isAdmin() {
+    public function isAdmin(): bool
+    {
         return $this->role === 'admin';
     }
 
     /**
-     * Vérifie si l'utilisateur a un séjour actif (VIP)
-     * Utile pour autoriser ou non la réservation de services en chambre
+     * Vérifie si l'utilisateur est actuellement un résident VIP
+     * (A au moins une réservation de chambre confirmée)
      */
-    public function hasActiveStay() {
-        // Vérifie s'il existe une réservation confirmée pour cet utilisateur
+    public function hasActiveStay(): bool
+    {
+        // Option 1 : Logique stricte (doit avoir une réservation confirmée)
         return $this->roomBookings()->where('status', 'confirmed')->exists();
+
+
     }
 }

@@ -4,60 +4,76 @@ namespace App\Http\Controllers;
 
 use App\Models\Room;
 use Illuminate\View\View;
-use Illuminate\Http\Request; // INDISPENSABLE pour le store
+use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 
 class RoomController extends Controller
 {
-    // Afficher la liste des chambres
+    /**
+     * Affiche toutes les chambres (Espace Admin)
+     */
     public function index(): View
     {
         $rooms = Room::all();
         return view('admin.rooms.index', compact('rooms'));
     }
 
-    // Enregistrer une nouvelle chambre
+    /**
+     * Enregistrer une nouvelle chambre
+     */
     public function store(Request $request): RedirectResponse
     {
-        // 1. Validation : on vérifie que les données sont correctes
         $validated = $request->validate([
-    'room_number' => 'required',
-    'price' => 'required|numeric',
-    'description' => 'nullable',
-    'status' => 'required',
-]);
+            'room_number' => 'required|unique:rooms,room_number',
+            'type'        => 'required|string',
+            'price'       => 'required|numeric',
+            'status'      => 'required|in:disponible,occupe,maintenance',
+            'image_url'   => 'nullable|url',
+        ]);
 
-        // 2. Création en base de données
         Room::create($validated);
 
-        // 3. Retour avec un message de succès
         return back()->with('success', 'La chambre ' . $request->room_number . ' a été ajoutée avec succès !');
     }
 
-    public function showByCategory($type)
+    /**
+     * Affiche les chambres par catégorie (Côté Client)
+     */
+    public function showByCategory($type): View
     {
-        // On récupère uniquement les chambres de ce type qui sont disponibles
-        $rooms = Room::where('room_type', $type)
+        $rooms = Room::where('type', $type)
                      ->where('status', 'disponible')
                      ->get();
 
-        // On retourne la vue avec les données
         return view('rooms.category', [
-            'rooms' => $rooms,
+            'rooms'        => $rooms,
             'categoryName' => $type
         ]);
     }
 
-public function showRooms()
-{
-    // On récupère les catégories et on compte le nombre de chambres par type
-    $categories = \App\Models\Room::select('type as name')
-        ->selectRaw('count(*) as count')
-        ->groupBy('type')
-        ->get();
+    /**
+     * Affiche le résumé des catégories (Page d'accueil des types)
+     */
+    public function showRooms(): View
+    {
+        $categories = Room::select('type as name')
+            ->selectRaw('count(*) as count')
+            ->groupBy('type')
+            ->get();
 
-    return view('rooms.showRooms', compact('categories'));
-}
+        return view('rooms.showRooms', compact('categories'));
+    }
 
+    /**
+     * Dashboard Admin
+     */
+    public function adminDashboard(): View
+    {
+        $totalRooms = Room::count();
+        $availableRooms = Room::where('status', 'disponible')->count();
+        $busyRooms = Room::where('status', 'occupe')->count();
+        $recentRooms = Room::latest()->take(5)->get();
 
-}
+        return view('admin.dashboard', compact('totalRooms', 'availableRooms', 'busyRooms', 'recentRooms'));
+    }
+} // <--- CETTE ACCOLADE FERME LA CLASSE. RIEN NE DOIT ÊTRE APRÈS.

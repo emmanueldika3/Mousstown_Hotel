@@ -76,32 +76,44 @@
                     <a href="/Contact" class="nav-link {{ request()->is('Contact*') ? 'active' : '' }}">nous Contacter</a>
                 </div>
 
-                <div style="display: flex; align-items: center; gap: 25px; border-left: 2px solid #4a5568; padding-left: 25px;">
-                    <a href="{{ route('login') }}"
-                       style="font-size: 14px; font-weight: 900; text-transform: uppercase; color: white; text-decoration: none; transition: 0.3s;"
-                       onmouseover="this.style.color='#f97316'"
-                       onmouseout="this.style.color='white'">
-                        Connexion
-                    </a>
 
-                    @auth
-                        <a href="{{ route('client.dashboard') }}"
-                           style="background: #f97316; color: white; padding: 0.9rem 2rem; border-radius: 50px; font-size: 12px; font-weight: 900; text-transform: uppercase; text-decoration: none; transition: 0.3s; display: inline-block;"
-                           onmouseover="this.style.transform='scale(1.1)';"
-                           onmouseout="this.style.transform='scale(1)';">
-                            <i class="fa-solid fa-circle-user" style="margin-right: 8px;"></i> Mon Espace
-                        </a>
-                    @else
-                        <a href="{{ route('login') }}"
-                           style="background: #f97316; color: white; padding: 0.9rem 2rem; border-radius: 50px; font-size: 12px; font-weight: 900; text-transform: uppercase; text-decoration: none; transition: 0.3s; display: inline-block;"
-                           onmouseover="this.style.transform='scale(1.1)';"
-                           onmouseout="this.style.transform='scale(1)';">
-                            Mon Espace
-                        </a>
-                    @endauth
-                </div>
             </div>
 
+            <div style="display: flex; align-items: center; gap: 20px; border-left: 2px solid #4a5568; padding-left: 25px;">
+    @auth
+        <span style="font-size: 14px; font-weight: 700; color: #f97316; text-transform: capitalize;">
+            <i class="fa-solid fa-circle-user" style="margin-right: 5px;"></i>
+            {{ auth()->user()->name }}
+        </span>
+
+        <a href="{{ auth()->user()->role === 'admin' ? route('admin.dashboard') : route('client.dashboard') }}"
+           style="background: #f97316; color: white; padding: 0.8rem 1.8rem; border-radius: 50px; font-size: 11px; font-weight: 900; text-transform: uppercase; text-decoration: none; transition: 0.3s;"
+           onmouseover="this.style.transform='scale(1.05)'"
+           onmouseout="this.style.transform='scale(1)'">
+            {{ auth()->user()->role === 'admin' ? 'Panel Admin' : 'Mon Espace' }}
+        </a>
+
+        <form method="POST" action="{{ route('logout') }}" style="margin: 0; display: flex; align-items: center;">
+            @csrf
+            <button type="submit" style="background: none; border: none; color: #cbd5e0; cursor: pointer; font-size: 18px; padding: 0; margin-left: 10px;"
+                    title="Se déconnecter"
+                    onmouseover="this.style.color='#ef4444'"
+                    onmouseout="this.style.color='#cbd5e0'">
+                <i class="fa-solid fa-power-off"></i>
+            </button>
+        </form>
+
+    @else
+        <a href="{{ route('login') }}" style="font-size: 14px; font-weight: 900; text-transform: uppercase; color: white; text-decoration: none;">
+            Connexion
+        </a>
+
+        <a href="{{ route('register') }}"
+           style="background: #f97316; color: white; padding: 0.8rem 1.8rem; border-radius: 50px; font-size: 11px; font-weight: 900; text-transform: uppercase; text-decoration: none;">
+            S'inscrire
+        </a>
+    @endauth
+</div>
             <div class="mobile-burger" style="display: none;">
                 <button @click="open = !open" style="background: none; border: none; color: white; cursor: pointer;">
                     <svg x-show="!open" style="width: 35px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>

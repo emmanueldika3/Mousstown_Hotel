@@ -9,20 +9,23 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+public function up(): void
 {
-    Schema::create('reservations', function (Blueprint $table) {
-        $table->id();
-        $table->foreignId('room_id')->constrained()->onDelete('cascade');
-        $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null'); // Si le client a un compte
-        $table->string('customer_name');
-        $table->string('customer_email');
-        $table->date('check_in');
-        $table->date('check_out');
-        $table->decimal('total_price', 10, 2);
-        $table->string('status')->default('en_attente'); // en_attente, confirmée, annulée
-        $table->timestamps();
-    });
+    // On ajoute cette protection : SI la table n'existe PAS, on la crée
+    if (!Schema::hasTable('reservations')) {
+        Schema::create('reservations', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('room_id')->constrained();
+            $table->foreignId('user_id')->nullable()->constrained();
+            $table->string('customer_name');
+            $table->string('customer_email');
+            $table->date('check_in');
+            $table->date('check_out');
+            $table->decimal('total_price', 10, 2);
+            $table->string('status')->default('en_attente');
+            $table->timestamps();
+        });
+    }
 }
 
     /**
