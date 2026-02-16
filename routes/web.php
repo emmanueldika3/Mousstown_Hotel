@@ -9,6 +9,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\ServicesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,51 +17,54 @@ use App\Http\Controllers\ContactController;
 |--------------------------------------------------------------------------
 */
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// Chambres
 Route::get('/nos-chambres', [RoomController::class, 'showRooms'])->name('rooms.showRooms');
 Route::get('/nos-chambres/categorie/{type}', [RoomController::class, 'showByCategory'])->name('rooms.category');
 Route::get('/chambre-details/{id}', [HomeController::class, 'roomDetails'])->name('room.visit');
 
-// AJOUT DE LA ROUTE SERVICES EN PUBLIC
-Route::get('/services', [HomeController::class, 'services'])->name('services');
+// Services (Page d'affichage publique)
+// Remplace ta ligne service par ces deux-là pour être blindé :
+Route::get('/services', [ServicesController::class, 'index'])->name('services.services');
+Route::get('/nos-services', [ServicesController::class, 'index'])->name('services');
+// Contact
+Route::get('/Contact', function () {
+    return view('contact');
+})->name('contact');
+Route::post('/contact/send', [ContactController::class, 'store'])->name('contact.store');
 
+// Authentification Admin/Base
 Route::get('/login', function () {
     return view('admin.auth.login');
 })->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 
-Route::post('/contact/send', [ContactController::class, 'store'])->name('contact.store');
-
-
-// Route simple pour afficher la vue contact
-Route::get('/Contact', function () {
-    return view('contact');
-})->name('contact');
-
 /*
 |--------------------------------------------------------------------------
-| SYSTÈME DE RÉSERVATION
+| ROUTES CONNECTÉES (Utilisateurs authentifiés)
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
+
+    // Système de Réservation de Chambres
     Route::get('/reservations/create', [ReservationController::class, 'create'])->name('reservations.create');
     Route::post('/reservations', [ReservationController::class, 'store'])->name('reservations.store');
     Route::post('/bookings/{id}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
+
+    // Réservation de Services (Action POST)
+    Route::post('/services/{id}/book', [ServicesController::class, 'book'])->name('services.book');
+
+    /* --- Espace Client (mon-espace) --- */
+    Route::prefix('mon-espace')->name('client.')->group(function () {
+        Route::get('/dashboard', [ClientController::class, 'index'])->name('dashboard');
+        Route::get('/profil', [ClientController::class, 'profile'])->name('profile');
+        Route::get('/mes-reservations', [ClientController::class, 'index'])->name('reservations');
+    });
 });
 
 /*
 |--------------------------------------------------------------------------
-| ROUTES CLIENTS (mon-espace)
-|--------------------------------------------------------------------------
-*/
-Route::middleware(['auth'])->prefix('mon-espace')->name('client.')->group(function () {
-    Route::get('/dashboard', [ClientController::class, 'index'])->name('dashboard');
-    Route::get('/profil', [ClientController::class, 'profile'])->name('profile');
-    Route::get('/mes-reservations', [ClientController::class, 'index'])->name('reservations');
-});
-
-/*
-|--------------------------------------------------------------------------
-| ROUTES ADMIN (admin)
+| ROUTES ADMIN
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
