@@ -8,19 +8,15 @@ use Illuminate\Support\Facades\Auth;
 
 class ClientController extends Controller
 {
-    public function index()
+public function index()
     {
-        // 1. On récupère l'ID de Dika (5)
-        $userId = Auth::id();
-
-        // 2. On récupère ses réservations avec les infos de la chambre
-        // Assure-toi que le nom de la variable est EXACTEMENT $myBookings
-        $myBookings = Booking::where('user_id', $userId)
+        // On récupère les réservations du client connecté avec les infos de la chambre
+        $myBookings = Reservation::where('user_id', Auth::id())
             ->with('room')
             ->latest()
             ->get();
 
-        // 3. On envoie à la vue
+        // On retourne la vue dans le dossier 'clients' (avec s)
         return view('clients.dashboard', compact('myBookings'));
     }
 }

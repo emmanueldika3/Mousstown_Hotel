@@ -1,6 +1,7 @@
 <x-app-layout>
     <div style="display: flex; min-height: 100vh; margin: -2rem; background: #f4f7fe;">
 
+        {{-- Sidebar --}}
         <aside style="width: 280px; background: #1a202c; color: white; position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; box-shadow: 4px 0 15px rgba(0,0,0,0.1); z-index: 90;">
             <div style="padding: 2.5rem 1.5rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.05);">
                 <img src="/images/logo_MH.png" alt="Logo" style="width: 70px; height: 70px; border-radius: 50%; border: 3px solid #f97316; background: white; margin: 0 auto 15px; object-fit: cover;">
@@ -17,6 +18,7 @@
             </nav>
         </aside>
 
+        {{-- Main Content --}}
         <main style="flex: 1; padding: 2.5rem;">
 
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
@@ -38,19 +40,22 @@
 
                         <span style="position: absolute; top: 15px; right: 15px; padding: 6px 14px; border-radius: 30px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
                             background: {{ $room->status == 'disponible' ? '#dcfce7' : '#fee2e2' }};
-                            color: {{ $room->status == 'disponible' ? '#15803d' : '#b91c1c' }}; shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                            {{ $room->status }}
+                            color: {{ $room->status == 'disponible' ? '#15803d' : '#b91c1c' }}; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                            {{ $room->status ?? 'Disponible' }}
                         </span>
                     </div>
 
                     <div style="padding: 1.5rem;">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
                             <div>
-                                <h3 style="margin: 0; font-size: 1.25rem; font-weight: 800; color: #1a202c;">{{ $room->room_number }}</h3>
-                                <span style="font-size: 0.8rem; color: #f97316; font-weight: 700; text-transform: uppercase;">{{ $room->type }}</span>
+                                {{-- Utilisation de $room->name --}}
+                                <h3 style="margin: 0; font-size: 1.25rem; font-weight: 800; color: #1a202c;">{{ $room->name }}</h3>
+                                {{-- Remplacement par room_type --}}
+                                <span style="font-size: 0.8rem; color: #f97316; font-weight: 700; text-transform: uppercase;">{{ $room->room_type }}</span>
                             </div>
                             <div style="text-align: right;">
-                                <span style="display: block; font-size: 1.3rem; font-weight: 900; color: #1a202c;">{{ number_format($room->price, 0, ',', ' ') }}</span>
+                                {{-- Remplacement par price_night --}}
+                                <span style="display: block; font-size: 1.3rem; font-weight: 900; color: #1a202c;">{{ number_format($room->price_night, 0, ',', ' ') }}</span>
                                 <small style="font-size: 0.7rem; color: #a0aec0; font-weight: 700;">CFA / NUIT</small>
                             </div>
                         </div>

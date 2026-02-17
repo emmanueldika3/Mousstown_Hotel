@@ -1,65 +1,78 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ContactController;
 use App\Http\Controllers\{
     HomeController, 
     RoomController, 
     ServicesController, 
-    BookingController, 
+    ReservationController,
     ClientController,
-    ReservationController
+    AdminController,
+    ContactController
 };
 
-
-
-/* --- ACCUEIL & PUBLICS --- */
+/*
+|--------------------------------------------------------------------------
+| ROUTES PUBLIQUES (Accessibles à tous)
+|--------------------------------------------------------------------------
+*/
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/nos-chambres', [RoomController::class, 'showRooms'])->name('rooms.showRooms');
 Route::get('/nos-services', [ServicesController::class, 'index'])->name('services');
-
-// Route pour afficher le formulaire
-// Dans routes/web.php, remplace ta ligne Contact par celle-ci :
-Route::get('/contact', function () {
-    return view('contact'); // Assure-toi que le fichier est bien resources/views/contact.blade.php
-})->name('contact');
-
-// Route pour envoyer les données (C'est celle-ci qui manque !)
-Route::post('/contact/send', [ContactController::class, 'store'])->name('contact.store');
-
-// Exemple de route pour filtrer par catégorie/type de chambre
 Route::get('/rooms/category/{type}', [RoomController::class, 'category'])->name('rooms.category');
 
+Route::get('/contact', fn() => view('contact'))->name('contact');
+Route::post('/contact/send', [ContactController::class, 'store'])->name('contact.store');
 
-Route::get('/reservations/create/{room_id}', [ReservationController::class, 'create'])->name('reservations.create');
-// Route pour afficher le formulaire
-Route::get('/reservations/create/{room_id}', [ReservationController::class, 'create'])->name('reservations.create');
-
-// Route pour ENREGISTRER la réservation (Celle qui manque)
-Route::post('/reservations/store', [ReservationController::class, 'store'])->name('reservations.store');
-
-
-/* --- AUTHENTIFICATION --- */
+/*
+|--------------------------------------------------------------------------
+| AUTHENTIFICATION
+|--------------------------------------------------------------------------
+*/
+// Si tu n'utilises pas Breeze, on garde cette route personnalisée
 Route::get('/login', fn() => view('admin.auth.login'))->name('login');
 
-/* --- ESPACE CONNECTÉ (Middleware Auth) --- */
+/*
+|--------------------------------------------------------------------------
+| ROUTES PROTÉGÉES (Utilisateurs connectés)
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth'])->group(function () {
 
-    // Actions Services
-    Route::post('/services/{id}/book', [ServicesController::class, 'book'])->name('services.book');
+    // 1. REDIRECTION APRÈS CONNEXION
+    // Cette route gère l'aiguillage selon le rôle
+    Route::get('/dashboard', function () {
+        if (auth()->user()->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+        return redirect()->route('clients.dashboard');
+    })->name('dashboard');
 
-    // Espace Client
-    Route::prefix('mon-espace')->name('client.')->group(function () {
-        Route::get('/dashboard', [ClientController::class, 'index'])->name('dashboard');
+    // 2. RÉSERVATIONS (Client)
+    Route::get('/reserver/{room_id}', [ReservationController::class, 'create'])->name('reservations.create');
+    Route::post('/reserver', [ReservationController::class, 'store'])->name('reservations.store');
+
+    // 3. ESPACE CLIENT
+    Route::get('/mon-espace', [ClientController::class, 'index'])->name('clients.dashboard');
+
+    // 4. ESPACE ADMIN (Protégé par le préfixe 'admin')
+    Route::prefix('admin')->name('admin.')->group(function () {
+        
+        // Dashboard principal (admin.dashboard)
+        Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+        
+        // Actions sur les réservations (admin.bookings.approve / reject)
+        Route::patch('/bookings/{id}/approve', [AdminController::class, 'approve'])->name('bookings.approve');
+        Route::patch('/bookings/{id}/reject', [AdminController::class, 'reject'])->name('bookings.reject');
+        
+        // Gestion des chambres (admin.rooms.index, create, edit, etc.)
+        Route::resource('rooms', RoomController::class);
     });
 
-   // Espace Admin
-Route::prefix('admin')->name('admin.')->group(function () {
-    // On change 'dashboard' par 'index' ou on ajoute un alias
-    Route::get('/dashboard', [RoomController::class, 'adminDashboard'])->name('index'); 
-    Route::resource('rooms', RoomController::class);
-});
+    // 5. SERVICES
+    Route::post('/services/{id}/book', [ServicesController::class, 'book'])->name('services.book');
 
 });
 
+// Importation des routes d'authentification par défaut (Breeze/Jetstream)
 require __DIR__.'/auth.php';

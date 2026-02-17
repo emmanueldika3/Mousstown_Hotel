@@ -120,7 +120,7 @@
                     {{ auth()->user()->name }}
                 </span>
 
-                <a href="{{ auth()->user()->role === 'admin' ? route('admin.index') : route('client.dashboard') }}"
+                <a href="{{ auth()->user()->role === 'admin' ? route('admin.index') : route('clients.dashboard') }}"
                    style="background: #f97316; color: white; padding: 0.8rem 1.8rem; border-radius: 50px; font-size: 11px; font-weight: 900; text-transform: uppercase; text-decoration: none; transition: 0.3s;"
                    onmouseover="this.style.transform='scale(1.05)'"
                    onmouseout="this.style.transform='scale(1)'">
@@ -170,7 +170,7 @@
             <a href="/Contact" style="{{ $mob }} color: {{ request()->is('Contact*') ? '#f97316' : 'white' }}">Contact</a>
             
             @auth
-                 <a href="{{ auth()->user()->role === 'admin' ? route('admin.index') : route('client.dashboard') }}" style="{{ $mob }} color: #f97316; margin-top: 10px;">Mon Espace</a>
+                 <a href="{{ auth()->user()->role === 'admin' ? route('admin.index') : route('clients.dashboard') }}" style="{{ $mob }} color: #f97316; margin-top: 10px;">Mon Espace</a>
             @else
                  <a href="{{ route('login') }}" style="{{ $mob }} color: #f97316; margin-top: 10px;">Connexion</a>
             @endauth
