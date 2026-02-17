@@ -6,6 +6,7 @@ use App\Models\Room;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 
 class RoomController extends Controller
 {
@@ -24,11 +25,11 @@ class RoomController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'room_number' => 'required|unique:rooms,room_number',
-            'type'        => 'required|string',
-            'price'       => 'required|numeric',
-            'status'      => 'required|in:disponible,occupe,maintenance',
-            'image_url'   => 'nullable|url',
+            'room_number'     => 'required|unique:rooms,room_number',
+            'room_type'       => 'required|string',
+            'price_per_night' => 'required|numeric',
+            'description'     => 'nullable|string',
+            'is_available'    => 'boolean'
         ]);
 
         Room::create($validated);
@@ -41,8 +42,9 @@ class RoomController extends Controller
      */
     public function showByCategory($type): View
     {
-        $rooms = Room::where('type', $type)
-                     ->where('status', 'disponible')
+        // Utilisation de room_type et is_available pour correspondre à la migration
+        $rooms = Room::where('room_type', $type)
+                     ->where('is_available', true)
                      ->get();
 
         return view('rooms.category', [
@@ -52,13 +54,14 @@ class RoomController extends Controller
     }
 
     /**
-     * Affiche le résumé des catégories (Page d'accueil des types)
+     * Affiche le résumé des catégories
      */
     public function showRooms(): View
     {
-        $categories = Room::select('type as name')
+        // CORRECTION : On utilise room_type au lieu de type
+        $categories = Room::select('room_type as name')
             ->selectRaw('count(*) as count')
-            ->groupBy('type')
+            ->groupBy('room_type')
             ->get();
 
         return view('rooms.showRooms', compact('categories'));
@@ -70,10 +73,26 @@ class RoomController extends Controller
     public function adminDashboard(): View
     {
         $totalRooms = Room::count();
-        $availableRooms = Room::where('status', 'disponible')->count();
-        $busyRooms = Room::where('status', 'occupe')->count();
+        $availableRooms = Room::where('is_available', true)->count();
+        $busyRooms = Room::where('is_available', false)->count();
         $recentRooms = Room::latest()->take(5)->get();
 
         return view('admin.dashboard', compact('totalRooms', 'availableRooms', 'busyRooms', 'recentRooms'));
     }
-} // <--- CETTE ACCOLADE FERME LA CLASSE. RIEN NE DOIT ÊTRE APRÈS.
+
+    public function category($type)
+{
+    // 1. Récupérer les chambres en utilisant le nouveau nom de colonne 'room_type'
+    $rooms = \App\Models\Room::where('room_type', $type)->get();
+
+    // 2. On définit TOUTES les variantes possibles pour être sûr que Blade trouve son bonheur
+    $categoryName = ucfirst($type); 
+
+    // 3. On injecte les variables dans la vue
+    return view('rooms.category', [
+        'rooms' => $rooms,
+        'categoryName' => $categoryName,
+        'type' => $type
+    ]);
+}
+}

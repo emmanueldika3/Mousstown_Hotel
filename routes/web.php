@@ -7,8 +7,10 @@ use App\Http\Controllers\{
     RoomController, 
     ServicesController, 
     BookingController, 
-    ClientController
+    ClientController,
+    ReservationController
 };
+
 
 
 /* --- ACCUEIL & PUBLICS --- */
@@ -24,6 +26,17 @@ Route::get('/contact', function () {
 
 // Route pour envoyer les données (C'est celle-ci qui manque !)
 Route::post('/contact/send', [ContactController::class, 'store'])->name('contact.store');
+
+// Exemple de route pour filtrer par catégorie/type de chambre
+Route::get('/rooms/category/{type}', [RoomController::class, 'category'])->name('rooms.category');
+
+
+Route::get('/reservations/create/{room_id}', [ReservationController::class, 'create'])->name('reservations.create');
+// Route pour afficher le formulaire
+Route::get('/reservations/create/{room_id}', [ReservationController::class, 'create'])->name('reservations.create');
+
+// Route pour ENREGISTRER la réservation (Celle qui manque)
+Route::post('/reservations/store', [ReservationController::class, 'store'])->name('reservations.store');
 
 
 /* --- AUTHENTIFICATION --- */

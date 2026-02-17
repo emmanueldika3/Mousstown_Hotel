@@ -31,35 +31,32 @@
             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 35px;">
                 @foreach($rooms as $index => $room)
                     @php
-                        $catLower = strtolower($categoryName);
+                        // Utilisation du nouveau champ room_type pour la logique d'image
+                        $currentType = strtolower($room->room_type);
 
-                        // 1. CONFORT (TOTALEMENT INCHANGÉ)
-                        if (str_contains($catLower, 'confort')) {
+                        if (str_contains($currentType, 'confort')) {
                             $img1 = "https://images.unsplash.com/photo-1611892440504-42a792e24d32?q=80&w=800";
                             $img2 = "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=800";
                             $img3 = "https://images.unsplash.com/photo-1596701062351-8c2c14d1fdd0?q=80&w=800";
                             $img4 = "https://images.unsplash.com/photo-1493809842364-78817add7ffb?q=80&w=800";
                         }
-                        // 2. ROYALE (MARBRE ET HAUT STANDING)
-                        elseif (str_contains($catLower, 'royale')) {
-                           $img1 = "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=1000"; // Palace
-                            $img2 = "https://images.unsplash.com/photo-1560440021-33f9b867899d?q=80&w=800"; // Bain Royal
-                            $img3 = "https://images.unsplash.com/photo-1540518614846-7eded433c457?q=80&w=800"; // Grand salon de suite
-                            $img4 = "https://images.unsplash.com/photo-1571896349842-33c89424de2d?q=80&w=800"; // Piscine/Vue rooftop
+                        elseif (str_contains($currentType, 'royale')) {
+                            $img1 = "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=1000";
+                            $img2 = "https://images.unsplash.com/photo-1560440021-33f9b867899d?q=80&w=800";
+                            $img3 = "https://images.unsplash.com/photo-1540518614846-7eded433c457?q=80&w=800";
+                            $img4 = "https://images.unsplash.com/photo-1571896349842-33c89424de2d?q=80&w=800";
                         }
-                        // 3. LUXE (STYLE BOIS ET DÉTAIL BALCON)
-                        elseif (str_contains($catLower, 'luxe')) {
-                            $img1 = "https://images.unsplash.com/photo-1590490360182-c33d57733427?w=1000"; // Lit King Size
-                            $img2 = "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=800"; // Douche design
-                            $img3 = "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?q=80&w=800"; // Balcon avec vue terrasse
-                            $img4 = "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?q=80&w=800"; // Espace Massage/Spa
+                        elseif (str_contains($currentType, 'luxe')) {
+                            $img1 = "https://images.unsplash.com/photo-1590490360182-c33d57733427?w=1000";
+                            $img2 = "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=800";
+                            $img3 = "https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?q=80&w=800";
+                            $img4 = "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?q=80&w=800";
                         }
-                        // 4. STANDARD (FIX DÉTAILS 1 ET 2)
                         else {
-                            $img1 = "https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=1000"; // Chambre cosy
-                            $img2 = "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80"; // Salle de bain propre (Fix detail 1)
-                            $img3 = "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=800"; // Coin Kitchenette (Fix detail 2)
-                            $img4 = "https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=800"; // Bureau/Workspace
+                            $img1 = "https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=1000";
+                            $img2 = "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80";
+                            $img3 = "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=800";
+                            $img4 = "https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=800";
                         }
                     @endphp
 
@@ -79,24 +76,25 @@
                         <div style="padding: 25px;">
                             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
                                 <div>
-                                    <h3 style="margin: 0; color: #1a2238; font-size: 22px; font-weight: 800;">Chambre {{ $room->room_number }}</h3>
+                                    <h3 style="margin: 0; color: #1a2238; font-size: 22px; font-weight: 800;">{{ $room->name }}</h3>
                                     <span style="color: #ff8c00; font-size: 14px;">★★★★★</span>
                                 </div>
                                 <div style="text-align: right;">
-                                    <span style="display: block; font-weight: 900; color: #1a2238; font-size: 20px;">{{ number_format($room->price, 0, ',', ' ') }} F</span>
+                                    {{-- Mise à jour vers price_night --}}
+                                    <span style="display: block; font-weight: 900; color: #1a2238; font-size: 20px;">{{ number_format($room->price_night, 0, ',', ' ') }} F</span>
                                     <span style="font-size: 11px; color: #94a3b8; text-transform: uppercase;">Par nuit</span>
                                 </div>
                             </div>
 
                             <p style="color: #64748b; font-size: 14px; line-height: 1.6; margin-bottom: 25px;">
-                                @if(str_contains($catLower, 'royale'))
+                                @if(str_contains($currentType, 'royale'))
                                     Une expérience hors du commun. Matériaux nobles, volume généreux et vue panoramique.
-                                @elseif(str_contains($catLower, 'standard'))
+                                @elseif(str_contains($currentType, 'standard'))
                                     Praticité et confort réunis. Idéal pour un court séjour avec tout le nécessaire à portée de main.
-                                @elseif(str_contains($catLower, 'luxe'))
+                                @elseif(str_contains($currentType, 'luxe'))
                                     Le luxe dans les moindres détails : balcon privé, douche à l'italienne et literie premium.
                                 @else
-                                    Un espace soigné pour une détente absolue.
+                                    Un espace soigné pour une détente absolue ({{ $room->room_type }}).
                                 @endif
                             </p>
 
@@ -107,12 +105,12 @@
                                 <div style="text-align: center;"><span style="display: block; font-size: 18px;">☕</span><span style="font-size: 10px; color: #64748b; font-weight: 700;">CAFE</span></div>
                             </div>
 
-                           <a href="{{ route('reservations.create', ['room_id' => $room->id]) }}"
-   style="display: block; width: 100%; background: #1a2238; color: white; text-align: center; padding: 16px; border-radius: 14px; text-decoration: none; font-weight: 800; font-size: 14px; transition: 0.3s;"
-   onmouseover="this.style.background='#ff8c00'; this.style.transform='scale(1.02)'"
-   onmouseout="this.style.background='#1a2238'; this.style.transform='scale(1)'">
-    RÉSERVER CE SÉJOUR
-</a>
+                            <a href="{{ route('reservations.create', ['room_id' => $room->id]) }}"
+                               style="display: block; width: 100%; background: #1a2238; color: white; text-align: center; padding: 16px; border-radius: 14px; text-decoration: none; font-weight: 800; font-size: 14px; transition: 0.3s;"
+                               onmouseover="this.style.background='#ff8c00'; this.style.transform='scale(1.02)'"
+                               onmouseout="this.style.background='#1a2238'; this.style.transform='scale(1)'">
+                                RÉSERVER CE SÉJOUR
+                            </a>
                         </div>
                     </div>
                 @endforeach

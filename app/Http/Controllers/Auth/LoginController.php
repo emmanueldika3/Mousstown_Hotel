@@ -34,9 +34,9 @@ class LoginController extends Controller
                 return redirect()->route('admin.index');
             }
 
-            // Cas Client (Dika Emmanuel par exemple)
+           
             // On utilise 'client.dashboard' tel que défini dans ton web.php
-            return redirect()->intended(route('client.dashboard'));
+            return redirect()->intended(route('admin.dashboard'));
         }
 
         // 4. Échec de connexion

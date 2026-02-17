@@ -10,11 +10,12 @@ class Room extends Model
     use HasFactory;
 
     // Liste des champs autorisés à l'écriture
-    protected $fillable = [
-        'room_number', 
-        'type', 
-        'price', 
-        'status', 
-        'image_url'
-    ];
+   protected $fillable = [
+    'name', 
+    'description', 
+    'price', 
+    'room_type', // <-- Vérifie bien que c'est room_type ici
+    'capacity', 
+    'image'
+];
 }

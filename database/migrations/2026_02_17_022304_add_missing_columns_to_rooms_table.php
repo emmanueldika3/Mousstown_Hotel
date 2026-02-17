@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::table('rooms', function (Blueprint $table) {
-        $table->string('room_type')->after('room_number'); // Ajoute la colonne
-    });
+        Schema::table('rooms', function (Blueprint $table) {
+            //
+        });
     }
 
     /**
