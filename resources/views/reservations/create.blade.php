@@ -63,6 +63,16 @@
                                        style="width: 100%; padding: 14px; border-radius: 12px; border: 2px solid #ffedd5; background: #fffaf5;">
                             </div>
                         </div>
+                        <div class="mb-4">
+    <label class="block text-sm font-bold mb-2">Votre Email de contact</label>
+    <input type="email" name="email" 
+           value="{{ auth()->user()->email }}" 
+           class="w-full p-3 border rounded-lg @error('email') border-red-500 @enderror" 
+           required>
+    @error('email')
+        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+    @enderror
+</div>
 
                         <button type="submit"
                                 style="width: 100%; background: #1a2238; color: white; padding: 20px; border: none; border-radius: 15px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: 0.4s;"

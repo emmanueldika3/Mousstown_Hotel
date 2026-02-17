@@ -13,7 +13,8 @@ class Booking extends Model
     'check_in',
     'check_out',
     'total_price',
-    'status'
+    'status',
+    'email'
 ];
 
     // Indispensable pour que $booking->room fonctionne dans la vue

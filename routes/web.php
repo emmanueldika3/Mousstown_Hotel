@@ -17,9 +17,12 @@ use App\Http\Controllers\{
 |--------------------------------------------------------------------------
 */
 Route::get('/', [HomeController::class, 'index'])->name('home');
+// Dans routes/web.php
+Route::get('/rooms/{id}', [RoomController::class, 'showRooms'])->name('room.visit');
 Route::get('/nos-chambres', [RoomController::class, 'showRooms'])->name('rooms.showRooms');
 Route::get('/nos-services', [ServicesController::class, 'index'])->name('services');
 Route::get('/rooms/category/{type}', [RoomController::class, 'category'])->name('rooms.category');
+Route::get('/admin/bookings/{id}/pdf', [ReservationController::class, 'downloadPDF'])->name('admin.bookings.pdf');
 
 Route::get('/contact', fn() => view('contact'))->name('contact');
 Route::post('/contact/send', [ContactController::class, 'store'])->name('contact.store');

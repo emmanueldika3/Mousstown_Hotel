@@ -11,7 +11,7 @@ class ClientController extends Controller
 public function index()
     {
         // On récupère les réservations du client connecté avec les infos de la chambre
-        $myBookings = Reservation::where('user_id', Auth::id())
+        $myBookings = Booking::where('user_id', Auth::id())
             ->with('room')
             ->latest()
             ->get();
