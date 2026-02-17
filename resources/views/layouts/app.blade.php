@@ -54,85 +54,129 @@
             .desktop-menu { display: none !important; }
             .mobile-burger { display: block !important; }
         }
+
+        /* --- AJOUT DES MEDIA QUERIES SANS MODIFIER LE RESTE --- */
+        @media (max-width: 1024px) {
+            /* Masquer la partie authentification desktop */
+            nav > div > div:nth-child(3) { display: none !important; }
+
+            /* Mise en colonne de la barre de réservation */
+            section > div:last-child > div {
+                flex-direction: column !important;
+                width: 90% !important;
+                margin: 0 auto;
+                padding: 15px !important;
+            }
+            section div[style*="border-right"] {
+                border-right: none !important;
+                border-bottom: 1px solid #f1f5f9 !important;
+                width: 100% !important;
+                padding: 15px 0 !important;
+            }
+
+            /* Footer responsive */
+            footer > div:first-child {
+                flex-direction: column !important;
+                gap: 2rem !important;
+            }
+            footer div[style*="text-align: right"], 
+            footer div[style*="justify-content: flex-end"] {
+                text-align: center !important;
+                justify-content: center !important;
+            }
+            .copyright-bar {
+                flex-direction: column !important;
+                text-align: center !important;
+            }
+        }
+        /* ----------------------------------------------------- */
     </style>
 </head>
 <body class="bg-gray-100">
 
     <nav x-data="{ open: false }" style="background: #2d3748; color: white; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.4);">
-        <div style="max-width: 1400px; margin: 0 auto; padding: 1.2rem 2rem; display: flex; justify-content: space-between; align-items: center;">
+    <div style="max-width: 1400px; margin: 0 auto; padding: 1.2rem 2rem; display: flex; justify-content: space-between; align-items: center;">
 
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <img src="/images/logo_MH.png" alt="Logo" style="width: 70px; height: 70px; border-radius: 50%; border: 2px solid #f97316; background: #1a202c; object-fit: cover;">
-                <h1 style="color: white; font-size: 1.8rem; font-weight: 400; text-transform: uppercase; margin: 0; letter-spacing: 2px;">
-                    MOUSSTOWN_<span style="color: #f97316;">Hotel</span>
-                </h1>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <img src="/images/logo_MH.png" alt="Logo" style="width: 70px; height: 70px; border-radius: 50%; border: 2px solid #f97316; background: #1a202c; object-fit: cover;">
+            <h1 style="color: white; font-size: 1.8rem; font-weight: 400; text-transform: uppercase; margin: 0; letter-spacing: 2px;">
+                MOUSSTOWN_<span style="color: #f97316;">Hotel</span>
+            </h1>
+        </div>
+
+        <div class="desktop-menu" style="display: flex; align-items: center; flex: 1; justify-content: flex-end; gap: 40px;">
+            <div style="display: flex; gap: 30px; font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;">
+                <a href="/" class="nav-link {{ request()->is('/') ? 'active' : '' }}">Accueil</a>
+                <a href="{{ route('rooms.showRooms') }}" class="nav-link {{ request()->is('nos-chambres*') ? 'active' : '' }}">Chambres</a>
+                <a href="{{ route('services') }}" class="nav-link {{ (request()->is('services*') || request()->is('nos-services*')) ? 'active' : '' }}">Nos Services</a>
+                <a href="{{ route('contact') }}" class="nav-link {{ request()->routeIs('contact*') ? 'active' : '' }}">nous Contacter</a>
             </div>
+        </div>
 
-            <div class="desktop-menu" style="display: flex; align-items: center; flex: 1; justify-content: flex-end; gap: 40px;">
-                <div style="display: flex; gap: 30px; font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;">
-                    <a href="/" class="nav-link {{ request()->is('/') ? 'active' : '' }}">Accueil</a>
-                    <a href="{{ route('rooms.showRooms') }}" class="nav-link {{ Route::is('rooms.showRooms') ? 'active' : '' }}">Chambres</a>
-                    <a href="{{ route('services') }}" class="nav-link {{ request()->is('services*') ? 'active' : '' }}">Nos Services</a>
-                    <a href="/Contact" class="nav-link {{ request()->is('Contact*') ? 'active' : '' }}">nous Contacter</a>
-                </div>
+        <div style="display: flex; align-items: center; gap: 20px; border-left: 2px solid #4a5568; padding-left: 25px;">
+            @auth
+                <span style="font-size: 14px; font-weight: 700; color: #f97316; text-transform: capitalize;">
+                    <i class="fa-solid fa-circle-user" style="margin-right: 5px;"></i>
+                    {{ auth()->user()->name }}
+                </span>
 
+                <a href="{{ auth()->user()->role === 'admin' ? route('admin.index') : route('client.dashboard') }}"
+                   style="background: #f97316; color: white; padding: 0.8rem 1.8rem; border-radius: 50px; font-size: 11px; font-weight: 900; text-transform: uppercase; text-decoration: none; transition: 0.3s;"
+                   onmouseover="this.style.transform='scale(1.05)'"
+                   onmouseout="this.style.transform='scale(1)'">
+                    {{ auth()->user()->role === 'admin' ? 'Panel Admin' : 'Mon Espace' }}
+                </a>
 
-            </div>
+                <form method="POST" action="{{ route('logout') }}" style="margin: 0; display: flex; align-items: center;">
+                    @csrf
+                    <button type="submit" style="background: none; border: none; color: #cbd5e0; cursor: pointer; font-size: 18px; padding: 0; margin-left: 10px; transition: 0.3s;"
+                            title="Se déconnecter"
+                            onmouseover="this.style.color='#ef4444'"
+                            onmouseout="this.style.color='#cbd5e0'">
+                        <i class="fa-solid fa-power-off"></i>
+                    </button>
+                </form>
+            @else
+                <a href="{{ route('login') }}" 
+                   style="font-size: 14px; font-weight: 900; text-transform: uppercase; color: white; text-decoration: none; transition: 0.3s;"
+                   onmouseover="this.style.color='#f97316'"
+                   onmouseout="this.style.color='white'">
+                    Connexion
+                </a>
 
-            <div style="display: flex; align-items: center; gap: 20px; border-left: 2px solid #4a5568; padding-left: 25px;">
-    @auth
-        <span style="font-size: 14px; font-weight: 700; color: #f97316; text-transform: capitalize;">
-            <i class="fa-solid fa-circle-user" style="margin-right: 5px;"></i>
-            {{ auth()->user()->name }}
-        </span>
+                <a href="{{ route('register') }}"
+                   style="background: #f97316; color: white; padding: 0.8rem 1.8rem; border-radius: 50px; font-size: 11px; font-weight: 900; text-transform: uppercase; text-decoration: none; transition: 0.3s;"
+                   onmouseover="this.style.background='#ea580c'; this.style.transform='scale(1.05)'"
+                   onmouseout="this.style.background='#f97316'; this.style.transform='scale(1)'">
+                    S'inscrire
+                </a>
+            @endauth
+        </div>
 
-        <a href="{{ auth()->user()->role === 'admin' ? route('admin.dashboard') : route('client.dashboard') }}"
-           style="background: #f97316; color: white; padding: 0.8rem 1.8rem; border-radius: 50px; font-size: 11px; font-weight: 900; text-transform: uppercase; text-decoration: none; transition: 0.3s;"
-           onmouseover="this.style.transform='scale(1.05)'"
-           onmouseout="this.style.transform='scale(1)'">
-            {{ auth()->user()->role === 'admin' ? 'Panel Admin' : 'Mon Espace' }}
-        </a>
-
-        <form method="POST" action="{{ route('logout') }}" style="margin: 0; display: flex; align-items: center;">
-            @csrf
-            <button type="submit" style="background: none; border: none; color: #cbd5e0; cursor: pointer; font-size: 18px; padding: 0; margin-left: 10px;"
-                    title="Se déconnecter"
-                    onmouseover="this.style.color='#ef4444'"
-                    onmouseout="this.style.color='#cbd5e0'">
-                <i class="fa-solid fa-power-off"></i>
+        <div class="mobile-burger" style="display: none;">
+            <button @click="open = !open" style="background: none; border: none; color: white; cursor: pointer;">
+                <svg x-show="!open" style="width: 35px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                <svg x-show="open" style="width: 35px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" x-cloak><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
-        </form>
-
-    @else
-        <a href="{{ route('login') }}" style="font-size: 14px; font-weight: 900; text-transform: uppercase; color: white; text-decoration: none;">
-            Connexion
-        </a>
-
-        <a href="{{ route('register') }}"
-           style="background: #f97316; color: white; padding: 0.8rem 1.8rem; border-radius: 50px; font-size: 11px; font-weight: 900; text-transform: uppercase; text-decoration: none;">
-            S'inscrire
-        </a>
-    @endauth
-</div>
-            <div class="mobile-burger" style="display: none;">
-                <button @click="open = !open" style="background: none; border: none; color: white; cursor: pointer;">
-                    <svg x-show="!open" style="width: 35px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
-                    <svg x-show="open" style="width: 35px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" x-cloak><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
         </div>
+    </div>
 
-        <div x-show="open" x-cloak x-transition style="background: #1a202c; border-top: 1px solid #4a5568;">
-            <div style="display: flex; flex-direction: column; padding: 2rem; gap: 20px; text-align: center;">
-                @php $mob = "font-weight: 800; text-transform: uppercase; text-decoration: none; font-size: 16px;"; @endphp
-                <a href="/" style="{{ $mob }} color: {{ request()->is('/') ? '#f97316' : 'white' }}">Accueil</a>
-                <a href="{{ route('rooms.showRooms') }}" style="{{ $mob }} color: {{ Route::is('rooms.showRooms') ? '#f97316' : 'white' }}">Chambres</a>
-                <a href="/Services" style="{{ $mob }} color: {{ request()->is('Services*') ? '#f97316' : 'white' }}">Nos Services</a>
-                <a href="/Contact" style="{{ $mob }} color: {{ request()->is('Contact*') ? '#f97316' : 'white' }}">Contact</a>
-                <a href="{{ route('login') }}" style="{{ $mob }} color: #f97316; margin-top: 10px;">Connexion / Mon Espace</a>
-            </div>
+    <div x-show="open" x-cloak x-transition style="background: #1a202c; border-top: 1px solid #4a5568;">
+        <div style="display: flex; flex-direction: column; padding: 2rem; gap: 20px; text-align: center;">
+            @php $mob = "font-weight: 800; text-transform: uppercase; text-decoration: none; font-size: 16px; transition: 0.3s;"; @endphp
+            <a href="/" style="{{ $mob }} color: {{ request()->is('/') ? '#f97316' : 'white' }}">Accueil</a>
+            <a href="{{ route('rooms.showRooms') }}" style="{{ $mob }} color: {{ request()->is('nos-chambres*') ? '#f97316' : 'white' }}">Chambres</a>
+            <a href="{{ route('services') }}" style="{{ $mob }} color: {{ (request()->is('services*') || request()->is('nos-services*')) ? '#f97316' : 'white' }}">Nos Services</a>
+            <a href="/Contact" style="{{ $mob }} color: {{ request()->is('Contact*') ? '#f97316' : 'white' }}">Contact</a>
+            
+            @auth
+                 <a href="{{ auth()->user()->role === 'admin' ? route('admin.index') : route('client.dashboard') }}" style="{{ $mob }} color: #f97316; margin-top: 10px;">Mon Espace</a>
+            @else
+                 <a href="{{ route('login') }}" style="{{ $mob }} color: #f97316; margin-top: 10px;">Connexion</a>
+            @endauth
         </div>
-    </nav>
+    </div>
+</nav>
 
     <section style="position: relative; width: 100%; min-height: 500px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 1rem;">
         <div style="position: absolute; inset: 0; z-index: 0;">
@@ -163,7 +207,7 @@
         {{ $slot }}
     </main>
     <div style="position: fixed; bottom: 30px; right: 30px; z-index: 9999; display: flex; align-items: center; background: white; padding: 6px 18px 6px 8px; border-radius: 50px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); cursor: pointer; border: 1px solid #e2e8f0; transition: 0.3s;"
-         onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+          onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
         <div style="background: #f97316; width: 35px; height: 35px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white;">
             <i class="fa-solid fa-comment-dots"></i>
         </div>
@@ -176,20 +220,20 @@
         </div>
     </div>
 
-   <style>
+    <style>
     /* Animation des services au survol */
     .service-item {
         transition: all 0.3s ease-in-out;
     }
     .service-item:hover {
-        transform: scale(1.08) translateX(10px); /* Zoom + décalage vers la droite */
+        transform: scale(1.08) translateX(10px); 
         color: #f97316 !important;
     }
     .service-item i {
         transition: transform 0.3s ease;
     }
     .service-item:hover i {
-        transform: rotate(10deg); /* Rotation de l'icône au survol */
+        transform: rotate(10deg);
     }
 
     /* Effet sur les réseaux sociaux */
@@ -271,7 +315,7 @@
         </div>
     </div>
 
-    <div style="max-width: 1200px; margin: 3rem auto 0; padding-top: 2rem; border-top: 1px solid #2d3748; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+    <div class="copyright-bar" style="max-width: 1200px; margin: 3rem auto 0; padding-top: 2rem; border-top: 1px solid #2d3748; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
         <div style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">
             &copy; 2026 Mousstown_Hôtel - Luxe & Prestige.
         </div>

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\{
     HomeController, 
     RoomController, 
@@ -8,7 +9,7 @@ use App\Http\Controllers\{
     BookingController, 
     ClientController
 };
-use App\Http\Controllers\ContactController;
+
 
 /* --- ACCUEIL & PUBLICS --- */
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -16,7 +17,10 @@ Route::get('/nos-chambres', [RoomController::class, 'showRooms'])->name('rooms.s
 Route::get('/nos-services', [ServicesController::class, 'index'])->name('services');
 
 // Route pour afficher le formulaire
-Route::get('/contact', [ContactController::class, 'index'])->name('contact');
+// Dans routes/web.php, remplace ta ligne Contact par celle-ci :
+Route::get('/contact', function () {
+    return view('contact'); // Assure-toi que le fichier est bien resources/views/contact.blade.php
+})->name('contact');
 
 // Route pour envoyer les données (C'est celle-ci qui manque !)
 Route::post('/contact/send', [ContactController::class, 'store'])->name('contact.store');
