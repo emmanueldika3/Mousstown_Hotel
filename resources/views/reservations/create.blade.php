@@ -1,55 +1,27 @@
 <x-app-layout>
-    <div style="min-height: 100vh; background: #f0f2f5; padding: 50px 20px; font-family: 'Plus Jakarta Sans', sans-serif;">
-        <div style="max-width: 1000px; margin: 0 auto;">
-
-            <div style="text-align: center; margin-bottom: 40px;">
-                <h1 style="color: #1a2238; font-weight: 800; font-size: 2.5rem; margin-bottom: 10px;">Finalisez votre réservation</h1>
-                <p style="color: #64748b; font-size: 1.1rem;">Une étape de plus vers votre confort absolu.</p>
+    <div style="max-width: 900px; margin: 40px auto; padding: 0 20px;">
+        {{-- En-tête avec récapitulatif de la chambre --}}
+        <div style="background: white; border-radius: 25px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.05); border: 1px solid #f1f5f9;">
+            <div style="display: flex; flex-wrap: wrap;">
+                <div style="flex: 1; min-width: 300px; height: 250px;">
+                    <img src="{{ asset('storage/' . $selectedRoom->image_url) }}" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <div style="flex: 1; padding: 30px; min-width: 300px; display: flex; flex-direction: column; justify-content: center;">
+                    <span style="color: #ff8c00; font-weight: 800; text-transform: uppercase; font-size: 0.8rem;">Votre sélection</span>
+                    <h2 style="font-size: 1.8rem; font-weight: 900; color: #1a2238; margin: 10px 0;">Chambre {{ $selectedRoom->room_number }}</h2>
+                    <p style="color: #64748b;">{{ $selectedRoom->room_type }} • {{ number_format($selectedRoom->price, 0, ',', ' ') }} CFA / nuit</p>
+                </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 30px; align-items: start;">
-
-                <div style="background: white; padding: 40px; border-radius: 30px; shadow: 0 10px 40px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
-                    @if ($errors->any())
-    <div style="background: #fee2e2; color: #b91c1c; padding: 1rem; border-radius: 10px; margin-bottom: 1rem;">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-                    <form action="{{ route('reservations.store') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="room_id" value="{{ $room->id }}">
-
-                        <h3 style="color: #1a2238; margin-bottom: 25px; font-weight: 700;">Informations Personnelles</h3>
-
-                        <div style="margin-bottom: 20px;">
-                            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #475569;">Nom Complet</label>
-                            <input type="text" name="customer_name" required placeholder="Votre nom complet"
-                                   style="width: 100%; padding: 14px; border-radius: 12px; border: 2px solid #f1f5f9; outline: none; transition: 0.3s;"
-                                   onfocus="this.style.borderColor='#ff8c00'">
-                        </div>
-
-                        <div style="margin-bottom: 25px;">
-                            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #475569;">Adresse Email</label>
-                            <input type="email" name="customer_email" required placeholder="votre email"
-                                   style="width: 100%; padding: 14px; border-radius: 12px; border: 2px solid #f1f5f9; outline: none;">
-                        </div>
-                        <div style="margin-bottom: 25px;">
-    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #475569;">Numéro de Téléphone</label>
-    <div style="display: flex; gap: 10px;">
-        <span style="background: #f1f5f9; padding: 14px; border-radius: 12px; border: 2px solid #f1f5f9; color: #64748b; font-weight: 600;">+237</span>
-        <input type="tel" name="customer_phone" required placeholder="6XX XXX XXX"
-               style="flex: 1; padding: 14px; border-radius: 12px; border: 2px solid #f1f5f9; outline: none; transition: 0.3s;"
-               onfocus="this.style.borderColor='#ff8c00'">
-    </div>
-</div>
-
-                        <hr style="border: 0; border-top: 1px solid #f1f5f9; margin: 30px 0;">
-
-                        <h3 style="color: #1a2238; margin-bottom: 25px; font-weight: 700;">Dates du séjour</h3>
+            {{-- Formulaire de dates --}}
+            <form action="{{ route('reservations.store') }}" method="POST" style="padding: 40px; border-top: 1px solid #f1f5f9;">
+                @csrf
+                <input type="hidden" name="room_id" value="{{ $selectedRoom->id }}">
+                
+                {{-- Infos cachées car le user est connecté --}}
+                <input type="hidden" name="customer_name" value="{{ auth()->user()->name }}">
+                <input type="hidden" name="customer_email" value="{{ auth()->user()->email }}">
+                <input type="hidden" name="customer_phone" value="{{ auth()->user()->phone }}">
 
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 35px;">
                             <div>
@@ -63,6 +35,16 @@
                                        style="width: 100%; padding: 14px; border-radius: 12px; border: 2px solid #ffedd5; background: #fffaf5;">
                             </div>
                         </div>
+                        <div class="mb-4">
+    <label class="block text-sm font-bold mb-2">Votre Email de contact</label>
+    <input type="email" name="email" 
+           value="{{ auth()->user()->email }}" 
+           class="w-full p-3 border rounded-lg @error('email') border-red-500 @enderror" 
+           required>
+    @error('email')
+        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+    @enderror
+</div>
 
                         <button type="submit"
                                 style="width: 100%; background: #1a2238; color: white; padding: 20px; border: none; border-radius: 15px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: 0.4s;"
@@ -102,17 +84,17 @@
                             </div>
                         </div>
                     </div>
-
-                    <div style="display: flex; align-items: center; gap: 15px; margin-top: 25px; padding: 20px; background: white; border-radius: 20px; border: 1px solid #e2e8f0;">
-                        <span style="font-size: 2rem;">🛡️</span>
-                        <div>
-                            <p style="margin: 0; font-weight: 700; color: #1a2238;">Paiement Sécurisé</p>
-                            <p style="margin: 0; font-size: 0.8rem; color: #64748b;">Réservation garantie par certificat SSL</p>
-                        </div>
+                    <div>
+                        <label style="display: block; font-weight: 700; color: #1a2238; margin-bottom: 10px;">DATE DE DÉPART</label>
+                        <input type="date" name="check_out" required 
+                               style="width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #f1f5f9;">
                     </div>
                 </div>
 
-            </div>
+                <button type="submit" style="width: 100%; margin-top: 30px; padding: 20px; border-radius: 15px; background: #1a2238; color: white; font-weight: 900; border: none; cursor: pointer; transition: 0.3s;">
+                    CONFIRMER MA RÉSERVATION
+                </button>
+            </form>
         </div>
     </div>
 </x-app-layout>

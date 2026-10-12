@@ -2,21 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Booking;
+use App\Models\Reservation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ClientController extends Controller
 {
-public function index()
+    public function dashboard()
     {
         // On récupère les réservations du client connecté avec les infos de la chambre
-        $myBookings = Reservation::where('user_id', Auth::id())
+        $myBookings = Booking::where('user_id', Auth::id())
             ->with('room')
             ->latest()
             ->get();
 
-        // On retourne la vue dans le dossier 'clients' (avec s)
-        return view('clients.dashboard', compact('myBookings'));
+        // On utilise uniquement 'reservations'
+        return view('clients.dashboard', compact('reservations'));
+    }
+
+    // On fait pointer l'index vers le dashboard pour éviter les doublons
+    public function index()
+    {
+        return $this->dashboard();
     }
 }

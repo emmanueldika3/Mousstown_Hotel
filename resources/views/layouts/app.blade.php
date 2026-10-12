@@ -203,7 +203,7 @@
         </div>
     </section>
 
-    <main style="max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; width: 100%;">
+    <main style="{{ request()->is('admin*') ? 'width: 100%; margin: 0; padding: 0;' : 'max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; width: 100%;' }}">
         {{ $slot }}
     </main>
     <div style="position: fixed; bottom: 30px; right: 30px; z-index: 9999; display: flex; align-items: center; background: white; padding: 6px 18px 6px 8px; border-radius: 50px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); cursor: pointer; border: 1px solid #e2e8f0; transition: 0.3s;"

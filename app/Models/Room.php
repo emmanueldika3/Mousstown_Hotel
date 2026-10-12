@@ -15,7 +15,8 @@ class Room extends Model
     'description', 
     'price', 
     'room_type', // <-- Vérifie bien que c'est room_type ici
-    'capacity', 
+    'capacity',
+    'room_number', 
     'image'
 ];
 }

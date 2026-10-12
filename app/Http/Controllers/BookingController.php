@@ -7,6 +7,8 @@ use App\Models\Room;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use App\Mail\ReservationReceived;
+use Illuminate\Support\Facades\Mail;
 
 class BookingController extends Controller
 {
@@ -104,4 +106,14 @@ class BookingController extends Controller
 
         return back()->with('success', 'Votre réservation a été annulée avec succès.');
     }
+
+
+public function store(Request $request) 
+{
+    // ... validation et création de la réservation $booking
+    
+    Mail::to($booking->client_email)->send(new ReservationReceived($booking));
+    
+    return back()->with('success', 'Réservation enregistrée, un mail vous a été envoyé.');
+}
 }

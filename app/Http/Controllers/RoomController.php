@@ -95,4 +95,17 @@ class RoomController extends Controller
         'type' => $type
     ]);
 }
+
+public function show($id)
+{
+    // Logique pour trouver la chambre (ex: $room = Room::findOrFail($id);)
+    // Pour l'instant, on peut juste retourner une vue de test
+    return view('rooms.show', ['id' => $id]);
+}
+
+public function inventory() // ou le nom que vous avez mis dans la route
+{
+    $rooms = Room::all();
+    return view('admin.rooms.inventory', compact('rooms'));
+}
 }
